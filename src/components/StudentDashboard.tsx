@@ -1,0 +1,198 @@
+import { useState } from "react";
+import menuRibeye from "@/assets/menu-ribeye.jpg";
+import menuArancini from "@/assets/menu-arancini.jpg";
+import shishaPairing from "@/assets/shisha-pairing.jpg";
+
+const MealPassCard = () => (
+  <div className="bg-card rounded-3xl p-6 sm:p-8 ring-1 ring-border shadow-[0_0_60px_-15px_hsl(var(--amber-glow)/0.15)] relative overflow-hidden">
+    <div className="absolute -top-24 -right-24 size-64 bg-amber-dim rounded-full blur-[80px] opacity-30 animate-pulse-glow" />
+    <div className="relative z-10 flex flex-col gap-8">
+      <div className="flex justify-between items-start">
+        <div>
+          <p className="text-toast text-sm font-medium mb-2">Remaining Balance</p>
+          <div className="flex items-baseline gap-2">
+            <span className="font-serif text-5xl font-medium tracking-tight tabular-nums">14</span>
+            <span className="text-toast">/ 20</span>
+          </div>
+          <p className="text-toast text-sm mt-1">Dinners & Shisha pairings</p>
+        </div>
+        <div className="px-3 py-1 rounded-full bg-secondary ring-1 ring-border">
+          <span className="text-xs font-medium text-brass tracking-wide uppercase">Active</span>
+        </div>
+      </div>
+
+      {/* QR Code Area */}
+      <div className="bg-background rounded-2xl p-6 ring-1 ring-border flex flex-col items-center justify-center gap-4">
+        <div className="size-36 sm:size-40 bg-card ring-1 ring-border rounded-xl p-3 flex flex-wrap gap-1 opacity-80">
+          <div className="w-full h-8 bg-secondary rounded-sm mb-1" />
+          <div className="w-1/3 h-8 bg-mahogany-700 rounded-sm" />
+          <div className="w-1/2 h-8 bg-secondary rounded-sm ml-auto" />
+          <div className="w-2/3 h-8 bg-amber-dim/20 rounded-sm mt-1" />
+          <div className="w-1/4 h-8 bg-secondary rounded-sm" />
+        </div>
+        <p className="text-toast text-sm text-center max-w-[20ch]">Present at the host stand for booth access</p>
+      </div>
+
+      <button className="w-full bg-gradient-to-b from-mahogany-700 to-mahogany-800 text-foreground font-medium py-4 rounded-xl ring-1 ring-border shadow-lg hover:from-mahogany-700 hover:to-mahogany-700 transition-all">
+        Add Guest Pass (1 Dinner)
+      </button>
+    </div>
+  </div>
+);
+
+const ReservationSlots = () => {
+  const [selected, setSelected] = useState(1);
+  const slots = [
+    { time: "16:00", status: "available" },
+    { time: "16:30", status: "available" },
+    { time: "17:00", status: "available" },
+    { time: "17:30", status: "full" },
+  ];
+
+  return (
+    <div className="flex flex-col gap-4">
+      <h2 className="font-serif text-xl text-foreground">Reserve a Slot</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {slots.map((slot, i) => (
+          <button
+            key={slot.time}
+            onClick={() => slot.status !== "full" && setSelected(i)}
+            disabled={slot.status === "full"}
+            className={`py-3 rounded-xl ring-1 transition-all flex flex-col items-center justify-center gap-1 ${
+              slot.status === "full"
+                ? "bg-background ring-border opacity-50 cursor-not-allowed text-toast"
+                : selected === i
+                ? "bg-secondary ring-primary/40 text-brass shadow-[0_0_20px_-5px_hsl(var(--amber-glow)/0.2)]"
+                : "bg-card ring-border text-toast hover:ring-primary/30 hover:text-brass"
+            }`}
+          >
+            <span className="text-sm font-medium tabular-nums">{slot.time}</span>
+            <span className="text-xs opacity-70">
+              {slot.status === "full" ? "Full" : selected === i ? "Selected" : "Available"}
+            </span>
+          </button>
+        ))}
+      </div>
+      <button className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity">
+        Confirm Reservation
+      </button>
+    </div>
+  );
+};
+
+const menuItems = [
+  {
+    name: "Suya-Spiced Ribeye",
+    desc: "Charred over open coals, with smoked plantain puree and wild rocket.",
+    image: menuRibeye,
+    tag: "Main",
+  },
+  {
+    name: "Jollof Arancini",
+    desc: "Crispy rice spheres with braised ox-tail and spicy tomato emulsion.",
+    image: menuArancini,
+    tag: "Starter",
+  },
+];
+
+const MenuPreview = () => (
+  <div className="flex flex-col gap-4">
+    <div className="flex items-baseline justify-between">
+      <h2 className="font-serif text-xl text-foreground">Tonight's Offerings</h2>
+      <button className="text-toast hover:text-brass text-sm transition-colors">View Full</button>
+    </div>
+    <div className="flex flex-col gap-3">
+      {menuItems.map((item) => (
+        <div key={item.name} className="group flex gap-4 items-center bg-card/50 hover:bg-card p-3 rounded-2xl transition-colors ring-1 ring-transparent hover:ring-border">
+          <div className="size-20 shrink-0 bg-secondary rounded-xl overflow-hidden ring-1 ring-border">
+            <img
+              src={item.image}
+              loading="lazy"
+              width={640}
+              height={640}
+              className="w-full h-full object-cover opacity-80 mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-500"
+              alt={item.name}
+            />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-foreground font-medium truncate">{item.name}</h3>
+            <p className="text-toast text-sm mt-1 line-clamp-2 leading-relaxed">{item.desc}</p>
+          </div>
+        </div>
+      ))}
+
+      {/* Shisha Pairing */}
+      <div className="group flex gap-4 items-center bg-card/50 hover:bg-card p-3 rounded-2xl transition-colors ring-1 ring-transparent hover:ring-border mt-1">
+        <div className="size-20 shrink-0 rounded-xl overflow-hidden ring-1 ring-primary/20">
+          <img
+            src={shishaPairing}
+            loading="lazy"
+            width={640}
+            height={640}
+            className="w-full h-full object-cover opacity-80 mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-500"
+            alt="Shisha pairing"
+          />
+        </div>
+        <div className="min-w-0 flex-1">
+          <span className="text-xs font-medium text-primary tracking-wide uppercase px-2 py-0.5 rounded-sm bg-accent/30">Pairing</span>
+          <h3 className="text-foreground font-medium mt-1 truncate">Cardamom & Honey</h3>
+          <p className="text-toast text-sm truncate">Slow-burning dark leaf blend.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const navItems = [
+  { label: "Pass", active: true },
+  { label: "Menu", active: false },
+  { label: "Reserve", active: false },
+  { label: "Profile", active: false },
+];
+
+const BottomNav = () => (
+  <nav className="fixed bottom-0 left-0 w-full bg-card/95 backdrop-blur-lg border-t border-border grid grid-cols-4 z-50">
+    {navItems.map((item) => (
+      <button
+        key={item.label}
+        className={`py-4 flex flex-col items-center gap-1 text-sm font-semibold transition-colors ${
+          item.active ? "text-primary" : "text-toast hover:text-foreground"
+        }`}
+      >
+        {item.label}
+      </button>
+    ))}
+  </nav>
+);
+
+const StudentDashboard = () => {
+  return (
+    <div className="min-h-dvh bg-background pb-24">
+      {/* Header */}
+      <header className="px-5 pt-8 pb-4 flex justify-between items-end">
+        <div>
+          <p className="text-toast text-sm font-medium tracking-wide uppercase mb-1">Good Evening</p>
+          <h1 className="font-serif text-2xl sm:text-3xl font-medium tracking-tight text-foreground">
+            Khumkwhezi<br />Dine & Shisha
+          </h1>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="size-11 rounded-full bg-secondary flex items-center justify-center shrink-0 ring-1 ring-border">
+            <span className="font-serif text-brass text-base">ZT</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Content */}
+      <main className="px-5 flex flex-col gap-8 mt-2">
+        <MealPassCard />
+        <ReservationSlots />
+        <MenuPreview />
+      </main>
+
+      <BottomNav />
+    </div>
+  );
+};
+
+export default StudentDashboard;
