@@ -158,11 +158,21 @@ describe("Integration: real Supabase query shape — ProfilePage fetch (.maybeSi
     expect(url.searchParams.get("select")).toBe("*");
     expect(url.searchParams.get("user_id")).toBe(`eq.${userId}`);
 
+    // PostgREST single-row contract for .maybeSingle() in this supabase-js version:
+    // - The client parses the array response itself, so it does NOT send
+    //   `Accept: application/vnd.pgrst.object+json` (which would 406 on 0 rows).
+    // - It also does NOT add `limit=1` to the query string.
+    // This is what distinguishes .maybeSingle() from .single() on the wire.
+    expect(fetchReq!.headers["accept"] ?? "").not.toMatch(/vnd\.pgrst\.object/);
+    expect(url.searchParams.get("limit")).toBeNull();
+
     // apikey/auth header proves the real client is wired up.
     const apikey = fetchReq!.headers["apikey"] ?? fetchReq!.headers["Apikey"];
     expect(apikey).toBe(FAKE_KEY);
+    expect(fetchReq!.headers["authorization"]).toBe(`Bearer ${FAKE_KEY}`);
 
-    // UI populated → confirms the chain actually returned data the page consumed.
+    // UI populated → confirms the chain actually returned data the page consumed,
+    // i.e. .maybeSingle() correctly unwrapped the single-element array.
     await waitFor(() => {
       expect(screen.getByDisplayValue("Thabo")).toBeInTheDocument();
       expect(screen.getByDisplayValue("Mokoena")).toBeInTheDocument();
