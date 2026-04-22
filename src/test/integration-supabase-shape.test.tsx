@@ -229,6 +229,10 @@ describe("Integration: real Supabase query shape — ProfilePage update", () => 
     const url = new URL(patchReq.url);
     expect(url.pathname).toBe("/rest/v1/profiles");
     expect(url.searchParams.get("user_id")).toBe(`eq.${userId}`);
+    // PATCH from .update().eq() must NOT carry select params (no chained .select()).
+    expect(url.searchParams.get("select")).toBeNull();
+    // No single-row coercion on the update path.
+    expect(patchReq.headers["accept"] ?? "").not.toMatch(/vnd\.pgrst\.object/);
 
     expect(patchReq.body).toMatchObject({
       name: "Lerato",
