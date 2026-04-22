@@ -279,8 +279,84 @@ describe("Integration: real Supabase query shape — StudentDashboard fetch", ()
     expect(url.pathname).toBe("/rest/v1/profiles");
     expect(url.searchParams.get("select")).toBe("*");
     expect(url.searchParams.get("user_id")).toBe(`eq.${userId}`);
-    expect(req.headers["accept"]).toMatch(/application\/vnd\.pgrst\.object/);
+    // .maybeSingle() in this supabase-js version unwraps client-side; it must
+    // NOT request the PostgREST single-object representation (which 406s on 0 rows).
+    expect(req.headers["accept"] ?? "").not.toMatch(/vnd\.pgrst\.object/);
+    expect(url.searchParams.get("limit")).toBeNull();
 
+    // Initials render only if .maybeSingle() actually unwrapped the array → "SK".
     await waitFor(() => expect(screen.getByText("SK")).toBeInTheDocument());
+  });
+
+  it("treats an empty array as null without erroring (.maybeSingle() 0-row contract)", async () => {
+    // PostgREST returns [] when no row matches. .maybeSingle() must resolve
+    // with data: null (not throw), which the dashboard renders as "?" initials.
+    setNextResponse({ status: 200, body: [] });
+
+    renderWith(<StudentDashboard />);
+
+    await waitFor(() =>
+      expect(captured.some((r) => r.url.includes("/profiles"))).toBe(true),
+    );
+
+    // No crash, fallback initials shown.
+    await waitFor(() => expect(screen.getByText("?")).toBeInTheDocument());
+  });
+});
+
+describe("Integration: PostgREST single-row contract — direct client probe", () => {
+  // These tests exercise the supabase client directly (no UI) to lock in the
+  // wire-level differences between .single(), .maybeSingle(), and a plain
+  // select. If a future supabase-js upgrade changes this contract, the UI
+  // tests above will need to change too — these probes will tell us first.
+  it(".single() sends Accept: application/vnd.pgrst.object+json", async () => {
+    setNextResponse({
+      status: 200,
+      body: { id: "p1", user_id: userId, name: "X", surname: "Y" },
+    });
+
+    const { error } = await realClient
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userId)
+      .single();
+
+    expect(error).toBeNull();
+    const req = captured.at(-1)!;
+    expect(req.method).toBe("GET");
+    expect(req.headers["accept"]).toMatch(/application\/vnd\.pgrst\.object\+json/);
+  });
+
+  it(".maybeSingle() does NOT send the pgrst.object Accept header", async () => {
+    setNextResponse({ status: 200, body: [] });
+
+    const { data, error } = await realClient
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    // 0 rows → data must be null, not an error.
+    expect(error).toBeNull();
+    expect(data).toBeNull();
+    const req = captured.at(-1)!;
+    expect(req.headers["accept"] ?? "").not.toMatch(/vnd\.pgrst\.object/);
+  });
+
+  it("plain .select() returns an array and uses no single-row coercion", async () => {
+    setNextResponse({
+      status: 200,
+      body: [{ id: "p1", user_id: userId, name: "A", surname: "B" }],
+    });
+
+    const { data, error } = await realClient
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userId);
+
+    expect(error).toBeNull();
+    expect(Array.isArray(data)).toBe(true);
+    const req = captured.at(-1)!;
+    expect(req.headers["accept"] ?? "").not.toMatch(/vnd\.pgrst\.object/);
   });
 });
