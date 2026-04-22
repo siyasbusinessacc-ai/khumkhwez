@@ -121,8 +121,8 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe("Integration: real Supabase query shape — ProfilePage fetch", () => {
-  it("issues GET /rest/v1/profiles?select=*&user_id=eq.<uuid> with correct headers", async () => {
+describe("Integration: real Supabase query shape — ProfilePage fetch (.maybeSingle)", () => {
+  it("issues GET /rest/v1/profiles?select=*&user_id=eq.<uuid> with maybeSingle headers", async () => {
     setNextResponse({
       status: 200,
       body: [
