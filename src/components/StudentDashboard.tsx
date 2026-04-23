@@ -156,17 +156,20 @@ const MenuPreview = () => (
   </div>
 );
 
-const BottomNav = () => {
+const BottomNav = ({ isKitchen }: { isKitchen: boolean }) => {
   const navigate = useNavigate();
   const items = [
     { label: "Pass", path: "/", active: true },
-    { label: "Menu", path: "/", active: false },
-    { label: "Reserve", path: "/", active: false },
+    { label: "Refer", path: "/refer", active: false },
+    ...(isKitchen ? [{ label: "Kitchen", path: "/kitchen", active: false }] : []),
     { label: "Profile", path: "/profile", active: false },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 w-full bg-card/95 backdrop-blur-lg border-t border-border grid grid-cols-4 z-50">
+    <nav
+      className="fixed bottom-0 left-0 w-full bg-card/95 backdrop-blur-lg border-t border-border z-50"
+      style={{ display: "grid", gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
+    >
       {items.map((item) => (
         <button
           key={item.label}
