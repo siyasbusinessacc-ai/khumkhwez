@@ -55,7 +55,7 @@ describe("StudentDashboard", () => {
 
   it("renders the brand heading", () => {
     renderDash();
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/Khumkwhezi/);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/Khumkhwez/);
   });
 
   it("falls back to '?' initials when no profile", () => {
