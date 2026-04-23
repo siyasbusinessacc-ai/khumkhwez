@@ -136,6 +136,60 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          code_used: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          referred_user_id: string
+          referrer_user_id: string
+          reward_cents: number
+          status: string
+        }
+        Insert: {
+          code_used: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referred_user_id: string
+          referrer_user_id: string
+          reward_cents?: number
+          status?: string
+        }
+        Update: {
+          code_used?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referred_user_id?: string
+          referrer_user_id?: string
+          reward_cents?: number
+          status?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           activated_at: string | null
@@ -215,6 +269,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_or_create_referral_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -222,6 +277,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      redeem_referral_code: { Args: { _code: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "kitchen" | "student"

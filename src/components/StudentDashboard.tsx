@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { QRCodeSVG } from "qrcode.react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useUserRoles } from "@/hooks/useUserRoles";
+import { Logo } from "@/components/Logo";
 import type { Tables } from "@/integrations/supabase/types";
 import menuRibeye from "@/assets/menu-ribeye.jpg";
 import menuArancini from "@/assets/menu-arancini.jpg";
@@ -9,7 +12,7 @@ import shishaPairing from "@/assets/shisha-pairing.jpg";
 
 type Profile = Tables<"profiles">;
 
-const MealPassCard = () => (
+const MealPassCard = ({ userId }: { userId: string }) => (
   <div className="bg-card rounded-3xl p-6 sm:p-8 ring-1 ring-border shadow-[0_0_60px_-15px_hsl(var(--amber-glow)/0.15)] relative overflow-hidden">
     <div className="absolute -top-24 -right-24 size-64 bg-amber-dim rounded-full blur-[80px] opacity-30 animate-pulse-glow" />
     <div className="relative z-10 flex flex-col gap-8">
@@ -27,16 +30,20 @@ const MealPassCard = () => (
         </div>
       </div>
 
-      {/* QR Code Area */}
+      {/* QR Code */}
       <div className="bg-background rounded-2xl p-6 ring-1 ring-border flex flex-col items-center justify-center gap-4">
-        <div className="size-36 sm:size-40 bg-card ring-1 ring-border rounded-xl p-3 flex flex-wrap gap-1 opacity-80">
-          <div className="w-full h-8 bg-secondary rounded-sm mb-1" />
-          <div className="w-1/3 h-8 bg-mahogany-700 rounded-sm" />
-          <div className="w-1/2 h-8 bg-secondary rounded-sm ml-auto" />
-          <div className="w-2/3 h-8 bg-amber-dim/20 rounded-sm mt-1" />
-          <div className="w-1/4 h-8 bg-secondary rounded-sm" />
+        <div className="bg-parchment p-3 rounded-xl">
+          <QRCodeSVG
+            value={userId}
+            size={160}
+            bgColor="#F5EBD9"
+            fgColor="#0a0807"
+            level="M"
+          />
         </div>
-        <p className="text-toast text-sm text-center max-w-[20ch]">Present at the host stand for booth access</p>
+        <p className="text-toast text-sm text-center max-w-[24ch]">
+          Show this code at the kitchen to claim today's meal
+        </p>
       </div>
 
       <button className="w-full bg-gradient-to-b from-mahogany-700 to-mahogany-800 text-foreground font-medium py-4 rounded-xl ring-1 ring-border shadow-lg hover:from-mahogany-700 hover:to-mahogany-700 transition-all">
@@ -149,17 +156,20 @@ const MenuPreview = () => (
   </div>
 );
 
-const BottomNav = () => {
+const BottomNav = ({ isKitchen }: { isKitchen: boolean }) => {
   const navigate = useNavigate();
   const items = [
     { label: "Pass", path: "/", active: true },
-    { label: "Menu", path: "/", active: false },
-    { label: "Reserve", path: "/", active: false },
+    { label: "Refer", path: "/refer", active: false },
+    ...(isKitchen ? [{ label: "Kitchen", path: "/kitchen", active: false }] : []),
     { label: "Profile", path: "/profile", active: false },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 w-full bg-card/95 backdrop-blur-lg border-t border-border grid grid-cols-4 z-50">
+    <nav
+      className="fixed bottom-0 left-0 w-full bg-card/95 backdrop-blur-lg border-t border-border z-50"
+      style={{ display: "grid", gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
+    >
       {items.map((item) => (
         <button
           key={item.label}
@@ -178,6 +188,7 @@ const BottomNav = () => {
 const StudentDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { isKitchen } = useUserRoles();
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
@@ -202,11 +213,14 @@ const StudentDashboard = () => {
   return (
     <div className="min-h-dvh bg-background pb-24">
       <header className="px-5 pt-8 pb-4 flex justify-between items-end">
-        <div>
-          <p className="text-toast text-sm font-medium tracking-wide uppercase mb-1">{greeting}</p>
-          <h1 className="font-serif text-2xl sm:text-3xl font-medium tracking-tight text-foreground">
-            Khumkwhezi<br />Dine & Shisha
-          </h1>
+        <div className="flex items-end gap-3">
+          <Logo size={48} />
+          <div>
+            <p className="text-toast text-sm font-medium tracking-wide uppercase mb-1">{greeting}</p>
+            <h1 className="font-serif text-2xl sm:text-3xl font-medium tracking-tight text-foreground leading-tight">
+              Khumkhwez<br />Dine & Shisha
+            </h1>
+          </div>
         </div>
         <button onClick={() => navigate("/profile")} className="size-11 rounded-full bg-secondary flex items-center justify-center shrink-0 ring-1 ring-border hover:ring-primary transition-colors">
           <span className="font-serif text-brass text-base">{initials}</span>
@@ -214,12 +228,12 @@ const StudentDashboard = () => {
       </header>
 
       <main className="px-5 flex flex-col gap-8 mt-2">
-        <MealPassCard />
+        {user && <MealPassCard userId={user.id} />}
         <ReservationSlots />
         <MenuPreview />
       </main>
 
-      <BottomNav />
+      <BottomNav isKitchen={isKitchen} />
     </div>
   );
 };

@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { Logo } from "@/components/Logo";
+
+const REF_KEY = "khumkhwez_pending_ref";
 
 const AuthPage = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -9,11 +12,41 @@ const AuthPage = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [referralCode, setReferralCode] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+
+  // Capture ?ref=CODE from URL and remember it across email confirmation
+  useEffect(() => {
+    const fromUrl = searchParams.get("ref");
+    if (fromUrl) {
+      setReferralCode(fromUrl.toUpperCase());
+      localStorage.setItem(REF_KEY, fromUrl.toUpperCase());
+      setMode("signup");
+    } else {
+      const stored = localStorage.getItem(REF_KEY);
+      if (stored) setReferralCode(stored);
+    }
+  }, [searchParams]);
+
+  const tryRedeemPendingReferral = async () => {
+    const stored = localStorage.getItem(REF_KEY) || referralCode;
+    if (!stored) return;
+    const { data, error } = await supabase.rpc("redeem_referral_code", { _code: stored });
+    if (error) {
+      console.warn("Referral redeem error:", error.message);
+      return;
+    }
+    const result = data as { ok: boolean; reason?: string } | null;
+    if (result?.ok) {
+      toast({ title: "Referral applied", description: "Thanks for joining via a friend!" });
+    }
+    localStorage.removeItem(REF_KEY);
+  };
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +64,7 @@ const AuthPage = () => {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (error) throw error;
+        await tryRedeemPendingReferral();
         navigate("/");
       }
     } catch (err: any) {
@@ -71,6 +105,7 @@ const AuthPage = () => {
         type: mode === "signup" ? "sms" : "sms",
       });
       if (error) throw error;
+      await tryRedeemPendingReferral();
       navigate("/");
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -86,12 +121,20 @@ const AuthPage = () => {
     <div className="min-h-dvh bg-background flex flex-col items-center justify-center px-5">
       <div className="w-full max-w-sm flex flex-col gap-8">
         {/* Brand */}
-        <div className="text-center">
-          <p className="text-toast text-sm font-medium tracking-wide uppercase mb-1">Welcome to</p>
-          <h1 className="font-serif text-3xl font-medium tracking-tight text-foreground">
-            Khumkwhezi
-          </h1>
-          <p className="text-toast text-sm mt-1">Dine & Shisha House</p>
+        <div className="text-center flex flex-col items-center gap-3">
+          <Logo size={64} />
+          <div>
+            <p className="text-toast text-sm font-medium tracking-wide uppercase mb-1">Welcome to</p>
+            <h1 className="font-serif text-3xl font-medium tracking-tight text-foreground">
+              Khumkhwez
+            </h1>
+            <p className="text-toast text-sm mt-1">Dine & Shisha House</p>
+          </div>
+          {referralCode && (
+            <div className="mt-2 px-3 py-1.5 rounded-full bg-secondary ring-1 ring-primary/40">
+              <span className="text-xs text-brass tracking-wider uppercase">Referral: {referralCode}</span>
+            </div>
+          )}
         </div>
 
         {/* Method Toggle */}
