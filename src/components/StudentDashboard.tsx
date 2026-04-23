@@ -188,6 +188,7 @@ const BottomNav = ({ isKitchen }: { isKitchen: boolean }) => {
 const StudentDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { isKitchen } = useUserRoles();
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
@@ -212,11 +213,14 @@ const StudentDashboard = () => {
   return (
     <div className="min-h-dvh bg-background pb-24">
       <header className="px-5 pt-8 pb-4 flex justify-between items-end">
-        <div>
-          <p className="text-toast text-sm font-medium tracking-wide uppercase mb-1">{greeting}</p>
-          <h1 className="font-serif text-2xl sm:text-3xl font-medium tracking-tight text-foreground">
-            Khumkwhezi<br />Dine & Shisha
-          </h1>
+        <div className="flex items-end gap-3">
+          <Logo size={48} />
+          <div>
+            <p className="text-toast text-sm font-medium tracking-wide uppercase mb-1">{greeting}</p>
+            <h1 className="font-serif text-2xl sm:text-3xl font-medium tracking-tight text-foreground leading-tight">
+              Khumkhwez<br />Dine & Shisha
+            </h1>
+          </div>
         </div>
         <button onClick={() => navigate("/profile")} className="size-11 rounded-full bg-secondary flex items-center justify-center shrink-0 ring-1 ring-border hover:ring-primary transition-colors">
           <span className="font-serif text-brass text-base">{initials}</span>
@@ -224,12 +228,12 @@ const StudentDashboard = () => {
       </header>
 
       <main className="px-5 flex flex-col gap-8 mt-2">
-        <MealPassCard />
+        {user && <MealPassCard userId={user.id} />}
         <ReservationSlots />
         <MenuPreview />
       </main>
 
-      <BottomNav />
+      <BottomNav isKitchen={isKitchen} />
     </div>
   );
 };
