@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { QRCodeSVG } from "qrcode.react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useUserRoles } from "@/hooks/useUserRoles";
+import { Logo } from "@/components/Logo";
 import type { Tables } from "@/integrations/supabase/types";
 import menuRibeye from "@/assets/menu-ribeye.jpg";
 import menuArancini from "@/assets/menu-arancini.jpg";
@@ -9,7 +12,7 @@ import shishaPairing from "@/assets/shisha-pairing.jpg";
 
 type Profile = Tables<"profiles">;
 
-const MealPassCard = () => (
+const MealPassCard = ({ userId }: { userId: string }) => (
   <div className="bg-card rounded-3xl p-6 sm:p-8 ring-1 ring-border shadow-[0_0_60px_-15px_hsl(var(--amber-glow)/0.15)] relative overflow-hidden">
     <div className="absolute -top-24 -right-24 size-64 bg-amber-dim rounded-full blur-[80px] opacity-30 animate-pulse-glow" />
     <div className="relative z-10 flex flex-col gap-8">
@@ -27,16 +30,20 @@ const MealPassCard = () => (
         </div>
       </div>
 
-      {/* QR Code Area */}
+      {/* QR Code */}
       <div className="bg-background rounded-2xl p-6 ring-1 ring-border flex flex-col items-center justify-center gap-4">
-        <div className="size-36 sm:size-40 bg-card ring-1 ring-border rounded-xl p-3 flex flex-wrap gap-1 opacity-80">
-          <div className="w-full h-8 bg-secondary rounded-sm mb-1" />
-          <div className="w-1/3 h-8 bg-mahogany-700 rounded-sm" />
-          <div className="w-1/2 h-8 bg-secondary rounded-sm ml-auto" />
-          <div className="w-2/3 h-8 bg-amber-dim/20 rounded-sm mt-1" />
-          <div className="w-1/4 h-8 bg-secondary rounded-sm" />
+        <div className="bg-parchment p-3 rounded-xl">
+          <QRCodeSVG
+            value={userId}
+            size={160}
+            bgColor="#F5EBD9"
+            fgColor="#0a0807"
+            level="M"
+          />
         </div>
-        <p className="text-toast text-sm text-center max-w-[20ch]">Present at the host stand for booth access</p>
+        <p className="text-toast text-sm text-center max-w-[24ch]">
+          Show this code at the kitchen to claim today's meal
+        </p>
       </div>
 
       <button className="w-full bg-gradient-to-b from-mahogany-700 to-mahogany-800 text-foreground font-medium py-4 rounded-xl ring-1 ring-border shadow-lg hover:from-mahogany-700 hover:to-mahogany-700 transition-all">
