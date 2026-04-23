@@ -7,13 +7,22 @@ let fetchResult: { data: any; error: any } = { data: null, error: null };
 
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
-    from: vi.fn(() => ({
-      select: () => ({
-        eq: () => ({
-          maybeSingle: () => Promise.resolve(fetchResult),
+    from: vi.fn((table: string) => {
+      if (table === "user_roles") {
+        return {
+          select: () => ({
+            eq: () => Promise.resolve({ data: [], error: null }),
+          }),
+        };
+      }
+      return {
+        select: () => ({
+          eq: () => ({
+            maybeSingle: () => Promise.resolve(fetchResult),
+          }),
         }),
-      }),
-    })),
+      };
+    }),
   },
 }));
 
