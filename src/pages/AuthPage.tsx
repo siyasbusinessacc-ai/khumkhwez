@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { Logo } from "@/components/Logo";
+
+const REF_KEY = "khumkhwez_pending_ref";
 
 const AuthPage = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -9,11 +12,41 @@ const AuthPage = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [referralCode, setReferralCode] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+
+  // Capture ?ref=CODE from URL and remember it across email confirmation
+  useEffect(() => {
+    const fromUrl = searchParams.get("ref");
+    if (fromUrl) {
+      setReferralCode(fromUrl.toUpperCase());
+      localStorage.setItem(REF_KEY, fromUrl.toUpperCase());
+      setMode("signup");
+    } else {
+      const stored = localStorage.getItem(REF_KEY);
+      if (stored) setReferralCode(stored);
+    }
+  }, [searchParams]);
+
+  const tryRedeemPendingReferral = async () => {
+    const stored = localStorage.getItem(REF_KEY) || referralCode;
+    if (!stored) return;
+    const { data, error } = await supabase.rpc("redeem_referral_code", { _code: stored });
+    if (error) {
+      console.warn("Referral redeem error:", error.message);
+      return;
+    }
+    const result = data as { ok: boolean; reason?: string } | null;
+    if (result?.ok) {
+      toast({ title: "Referral applied", description: "Thanks for joining via a friend!" });
+    }
+    localStorage.removeItem(REF_KEY);
+  };
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
