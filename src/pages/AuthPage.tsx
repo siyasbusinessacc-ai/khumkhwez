@@ -64,6 +64,7 @@ const AuthPage = () => {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (error) throw error;
+        await tryRedeemPendingReferral();
         navigate("/");
       }
     } catch (err: any) {
@@ -104,6 +105,7 @@ const AuthPage = () => {
         type: mode === "signup" ? "sms" : "sms",
       });
       if (error) throw error;
+      await tryRedeemPendingReferral();
       navigate("/");
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -119,12 +121,20 @@ const AuthPage = () => {
     <div className="min-h-dvh bg-background flex flex-col items-center justify-center px-5">
       <div className="w-full max-w-sm flex flex-col gap-8">
         {/* Brand */}
-        <div className="text-center">
-          <p className="text-toast text-sm font-medium tracking-wide uppercase mb-1">Welcome to</p>
-          <h1 className="font-serif text-3xl font-medium tracking-tight text-foreground">
-            Khumkwhezi
-          </h1>
-          <p className="text-toast text-sm mt-1">Dine & Shisha House</p>
+        <div className="text-center flex flex-col items-center gap-3">
+          <Logo size={64} />
+          <div>
+            <p className="text-toast text-sm font-medium tracking-wide uppercase mb-1">Welcome to</p>
+            <h1 className="font-serif text-3xl font-medium tracking-tight text-foreground">
+              Khumkhwez
+            </h1>
+            <p className="text-toast text-sm mt-1">Dine & Shisha House</p>
+          </div>
+          {referralCode && (
+            <div className="mt-2 px-3 py-1.5 rounded-full bg-secondary ring-1 ring-primary/40">
+              <span className="text-xs text-brass tracking-wider uppercase">Referral: {referralCode}</span>
+            </div>
+          )}
         </div>
 
         {/* Method Toggle */}
