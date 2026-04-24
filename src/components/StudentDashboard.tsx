@@ -189,7 +189,7 @@ const BottomNav = ({ isKitchen, isAdmin }: { isKitchen: boolean; isAdmin: boolea
 const StudentDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { isKitchen } = useUserRoles();
+  const { isKitchen, isAdmin } = useUserRoles();
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
@@ -229,7 +229,7 @@ const StudentDashboard = () => {
         <MenuPreview />
       </main>
 
-      <BottomNav isKitchen={isKitchen} />
+      <BottomNav isKitchen={isKitchen} isAdmin={isAdmin} />
     </div>
   );
 };
