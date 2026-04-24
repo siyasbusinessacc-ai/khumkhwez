@@ -156,12 +156,13 @@ const MenuPreview = () => (
   </div>
 );
 
-const BottomNav = ({ isKitchen }: { isKitchen: boolean }) => {
+const BottomNav = ({ isKitchen, isAdmin }: { isKitchen: boolean; isAdmin: boolean }) => {
   const navigate = useNavigate();
   const items = [
     { label: "Pass", path: "/", active: true },
     { label: "Refer", path: "/refer", active: false },
     ...(isKitchen ? [{ label: "Kitchen", path: "/kitchen", active: false }] : []),
+    ...(isAdmin ? [{ label: "Admin", path: "/admin", active: false }] : []),
     { label: "Profile", path: "/profile", active: false },
   ];
 
@@ -188,7 +189,7 @@ const BottomNav = ({ isKitchen }: { isKitchen: boolean }) => {
 const StudentDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { isKitchen } = useUserRoles();
+  const { isKitchen, isAdmin } = useUserRoles();
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
@@ -228,7 +229,7 @@ const StudentDashboard = () => {
         <MenuPreview />
       </main>
 
-      <BottomNav isKitchen={isKitchen} />
+      <BottomNav isKitchen={isKitchen} isAdmin={isAdmin} />
     </div>
   );
 };
