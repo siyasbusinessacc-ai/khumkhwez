@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUserRoles } from "@/hooks/useUserRoles";
 import { useToast } from "@/hooks/use-toast";
 import { Logo } from "@/components/Logo";
+import { Sidebar } from "@/components/Sidebar";
 import type { Tables } from "@/integrations/supabase/types";
 import menuRibeye from "@/assets/menu-ribeye.jpg";
 import menuArancini from "@/assets/menu-arancini.jpg";
@@ -167,9 +168,6 @@ const PlanSelector = ({
   const choosePlan = async (plan: MealPlan) => {
     setBusy(plan.id);
     try {
-      // Create a pending subscription. Once Yoco is wired in, this row will be
-      // updated to "active" by the payment webhook; for now an admin can also
-      // activate it manually from the Admin → Users tab.
       const { error } = await supabase.from("subscriptions").insert({
         user_id: userId,
         plan_id: plan.id,
@@ -190,7 +188,7 @@ const PlanSelector = ({
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div id="packages" className="flex flex-col gap-4">
       <div>
         <h2 className="font-serif text-2xl text-foreground">Choose Your Plan</h2>
         <p className="text-toast text-sm mt-1">All plans run for 30 days from activation.</p>
@@ -280,7 +278,7 @@ const menuItems = [
 ];
 
 const MenuPreview = () => (
-  <div className="flex flex-col gap-4">
+  <div id="menu" className="flex flex-col gap-4">
     <div className="flex items-baseline justify-between">
       <h2 className="font-serif text-xl text-foreground">Tonight's Offerings</h2>
       <span className="text-toast text-xs uppercase tracking-wide">Sample menu</span>
@@ -331,44 +329,10 @@ const MenuPreview = () => (
 );
 
 // =====================================================
-// Bottom nav
-// =====================================================
-const BottomNav = ({ isKitchen, isAdmin }: { isKitchen: boolean; isAdmin: boolean }) => {
-  const navigate = useNavigate();
-  const items = [
-    { label: "Pass", path: "/", active: true },
-    { label: "Refer", path: "/refer", active: false },
-    ...(isKitchen ? [{ label: "Kitchen", path: "/kitchen", active: false }] : []),
-    ...(isAdmin ? [{ label: "Admin", path: "/admin", active: false }] : []),
-    { label: "Profile", path: "/profile", active: false },
-  ];
-
-  return (
-    <nav
-      className="fixed bottom-0 left-0 w-full bg-card/95 backdrop-blur-lg border-t border-border z-50"
-      style={{ display: "grid", gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
-    >
-      {items.map((item) => (
-        <button
-          key={item.label}
-          onClick={() => navigate(item.path)}
-          className={`py-4 flex flex-col items-center gap-1 text-sm font-semibold transition-colors ${
-            item.active ? "text-primary" : "text-toast hover:text-foreground"
-          }`}
-        >
-          {item.label}
-        </button>
-      ))}
-    </nav>
-  );
-};
-
-// =====================================================
 // Main
 // =====================================================
 const StudentDashboard = () => {
   const { user } = useAuth();
-  const { isKitchen, isAdmin } = useUserRoles();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [activeSub, setActiveSub] = useState<ActiveSub | null>(null);
   const [pendingPlanName, setPendingPlanName] = useState<string | null>(null);
@@ -444,7 +408,8 @@ const StudentDashboard = () => {
     new Date().getHours() < 12 ? "Good Morning" : new Date().getHours() < 17 ? "Good Afternoon" : "Good Evening";
 
   return (
-    <div className="min-h-dvh bg-background pb-24">
+    <div className="min-h-dvh bg-background pb-12">
+      <Sidebar />
       <header className="px-5 pt-8 pb-4 flex flex-col items-center gap-4">
         <Logo size={120} />
         <div className="text-center">
@@ -456,11 +421,10 @@ const StudentDashboard = () => {
             Khumkhwez Now
           </h1>
         </div>
-        {/* Hidden initials for accessibility / tests */}
         <span className="sr-only" data-testid="user-initials">{initials}</span>
       </header>
 
-      <main className="px-5 flex flex-col gap-8 mt-2">
+      <main className="px-5 flex flex-col gap-8 mt-2 max-w-2xl mx-auto">
         {loadingSub ? (
           <div className="bg-card rounded-3xl p-8 ring-1 ring-border text-center">
             <p className="text-toast text-sm">Loading your pass…</p>
@@ -477,8 +441,6 @@ const StudentDashboard = () => {
         )}
         <MenuPreview />
       </main>
-
-      <BottomNav isKitchen={isKitchen} isAdmin={isAdmin} />
     </div>
   );
 };

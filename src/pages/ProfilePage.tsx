@@ -3,6 +3,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { Sidebar } from "@/components/Sidebar";
+import { Logo } from "@/components/Logo";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Profile = Tables<"profiles">;
@@ -58,11 +60,6 @@ const ProfilePage = () => {
     setSaving(false);
   };
 
-  const handleLogout = async () => {
-    await signOut();
-    navigate("/auth");
-  };
-
   const update = (field: keyof Profile, value: string) =>
     setProfile((prev) => ({ ...prev, [field]: value }));
 
@@ -79,19 +76,15 @@ const ProfilePage = () => {
 
   return (
     <div className="min-h-dvh bg-background pb-24">
+      <Sidebar />
       <header className="px-5 pt-8 pb-4 flex justify-between items-center">
-        <div>
-          <button onClick={() => navigate("/")} className="text-toast hover:text-foreground text-sm transition-colors">← Back</button>
-          <h1 className="font-serif text-2xl font-medium tracking-tight text-foreground mt-2">Your Profile</h1>
-        </div>
-        <div className="size-11 rounded-full bg-secondary flex items-center justify-center ring-1 ring-border">
-          <span className="font-serif text-brass text-base">
-            {(profile.name?.[0] || "?").toUpperCase()}{(profile.surname?.[0] || "").toUpperCase()}
-          </span>
+        <div className="flex items-center gap-3">
+          <Logo size={44} />
+          <h1 className="font-serif text-2xl font-medium tracking-tight text-foreground">Your Profile</h1>
         </div>
       </header>
 
-      <form onSubmit={handleSave} className="px-5 flex flex-col gap-5 mt-2">
+      <form onSubmit={handleSave} className="px-5 flex flex-col gap-5 mt-2 max-w-2xl mx-auto">
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-1.5">
             <label className={labelClass}>Name</label>
@@ -138,10 +131,6 @@ const ProfilePage = () => {
 
         <button type="submit" disabled={saving} className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 text-sm mt-2">
           {saving ? "Saving..." : "Save Profile"}
-        </button>
-
-        <button type="button" onClick={handleLogout} className="w-full bg-secondary text-destructive font-medium py-3 rounded-xl ring-1 ring-border hover:bg-destructive/10 transition-colors text-sm">
-          Sign Out
         </button>
       </form>
     </div>

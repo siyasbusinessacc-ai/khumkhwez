@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Logo } from "@/components/Logo";
+import { Sidebar } from "@/components/Sidebar";
 
 type ReferralRow = {
   id: string;
@@ -68,17 +69,15 @@ const ReferralPage = () => {
 
   return (
     <div className="min-h-dvh bg-background pb-24">
+      <Sidebar />
       <header className="px-5 pt-8 pb-4 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <Logo size={40} />
+          <Logo size={44} />
           <h1 className="font-serif text-xl text-foreground">Refer a friend</h1>
         </div>
-        <button onClick={() => navigate(-1)} className="text-toast hover:text-brass text-sm">
-          Back
-        </button>
       </header>
 
-      <main className="px-5 flex flex-col gap-6 mt-2">
+      <main className="px-5 flex flex-col gap-6 mt-2 max-w-2xl mx-auto">
         {/* Code card */}
         <section className="bg-card rounded-3xl p-6 ring-1 ring-border relative overflow-hidden">
           <div className="absolute -top-24 -right-24 size-64 bg-amber-dim rounded-full blur-[80px] opacity-25" />
