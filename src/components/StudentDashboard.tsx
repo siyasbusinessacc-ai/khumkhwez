@@ -47,11 +47,11 @@ const daysBetween = (end: string) => {
 // Active pass card — shows real subscription + QR
 // =====================================================
 const ActivePassCard = ({
-  userId,
+  qrCodePass,
   sub,
   redeemedToday,
 }: {
-  userId: string;
+  qrCodePass: string;
   sub: ActiveSub;
   redeemedToday: boolean;
 }) => {
@@ -121,7 +121,7 @@ const ActivePassCard = ({
         {/* QR Code */}
         <div className="bg-background rounded-2xl p-6 ring-1 ring-border flex flex-col items-center justify-center gap-4">
           <div className="bg-parchment p-3 rounded-xl">
-            <QRCodeSVG value={userId} size={160} bgColor="#F5EBD9" fgColor="#0a0807" level="M" />
+            <QRCodeSVG value={qrCodePass} size={160} bgColor="#F5EBD9" fgColor="#0a0807" level="M" />
           </div>
           <p className="text-toast text-sm text-center max-w-[26ch]">
             {redeemedToday
@@ -430,7 +430,11 @@ const StudentDashboard = () => {
             <p className="text-toast text-sm">Loading your pass…</p>
           </div>
         ) : activeSub ? (
-          <ActivePassCard userId={user!.id} sub={activeSub} redeemedToday={redeemedToday} />
+          <ActivePassCard 
+            qrCodePass={profile?.qr_code_pass || user!.id} 
+            sub={activeSub} 
+            redeemedToday={redeemedToday} 
+          />
         ) : pendingPlanName ? (
           <>
             <PendingPassCard planName={pendingPlanName} />
