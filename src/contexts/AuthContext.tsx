@@ -18,21 +18,45 @@ const AuthContext = createContext<AuthContextType>({
 
 export const useAuth = () => useContext(AuthContext);
 
+const BOOTSTRAP_EMAIL = "Siyasbusinessacc@gmail.com";
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const handleBootstrap = async (user: User | null) => {
+      if (user?.email?.toLowerCase() === BOOTSTRAP_EMAIL.toLowerCase()) {
+        console.log("Admin bootstrap detected for:", user.email);
+        try {
+          const { data, error } = await supabase.rpc("claim_first_admin");
+          if (error) {
+            console.error("Bootstrap error:", error.message);
+          } else {
+            console.log("Bootstrap result:", data);
+          }
+        } catch (e) {
+          console.error("Bootstrap exception:", e);
+        }
+      }
+    };
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
         setLoading(false);
+        if (session?.user) {
+          handleBootstrap(session.user);
+        }
       }
     );
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
+      if (session?.user) {
+        handleBootstrap(session.user);
+      }
     });
 
     return () => subscription.unsubscribe();
