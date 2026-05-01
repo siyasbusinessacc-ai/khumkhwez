@@ -98,6 +98,7 @@ export type Database = {
           id: string
           name: string | null
           primary_phone: string | null
+          qr_code_pass: string | null
           secondary_phone: string | null
           student_number: string | null
           surname: string | null
@@ -113,6 +114,7 @@ export type Database = {
           id?: string
           name?: string | null
           primary_phone?: string | null
+          qr_code_pass?: string | null
           secondary_phone?: string | null
           student_number?: string | null
           surname?: string | null
@@ -128,6 +130,7 @@ export type Database = {
           id?: string
           name?: string | null
           primary_phone?: string | null
+          qr_code_pass?: string | null
           secondary_phone?: string | null
           student_number?: string | null
           surname?: string | null
@@ -327,6 +330,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      admin_reissue_pass_code: { Args: { _target_user: string }; Returns: Json }
       admin_revoke_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -335,6 +339,7 @@ export type Database = {
         Returns: Json
       }
       claim_first_admin: { Args: never; Returns: Json }
+      generate_qr_pass_code: { Args: never; Returns: string }
       get_or_create_referral_code: { Args: never; Returns: string }
       has_role: {
         Args: {
@@ -344,6 +349,11 @@ export type Database = {
         Returns: boolean
       }
       redeem_referral_code: { Args: { _code: string }; Returns: Json }
+      serve_meal_by_pass: {
+        Args: { _kitchen_user_id?: string; _pass_code: string }
+        Returns: Json
+      }
+      verify_pass: { Args: { _pass_code: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "kitchen" | "student"
