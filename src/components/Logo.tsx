@@ -1,15 +1,17 @@
 import { Link } from "react-router-dom";
-import logoSrc from "@/assets/khumkhwez-logo.png";
+import logoWithText from "@/assets/khumkhwez-logo.png";
+import logoSymbol from "@/assets/logo-symbol.png";
 
 interface LogoProps {
   className?: string;
   size?: number;
+  variant?: "full" | "symbol";
 }
 
-export const Logo = ({ className = "", size = 48 }: LogoProps) => (
+export const Logo = ({ className = "", size = 48, variant = "full" }: LogoProps) => (
   <Link to="/" className="inline-block transition-transform active:scale-95">
     <img
-      src={logoSrc}
+      src={variant === "full" ? logoWithText : logoSymbol}
       alt="Khumkhwez Dine & Shisha House"
       width={size}
       height={size}

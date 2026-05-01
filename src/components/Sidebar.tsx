@@ -65,7 +65,7 @@ export const Sidebar = () => {
       >
         <div className="flex flex-col h-full p-6">
           <div className="flex flex-col items-center gap-2 mb-10 pt-4">
-            <Logo size={80} />
+            <Logo size={80} variant="symbol" />
             <p className="font-serif text-lg text-foreground mt-2">Khumkhwez</p>
           </div>
 

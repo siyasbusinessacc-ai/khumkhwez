@@ -46,45 +46,129 @@ const KitchenDashboard = () => {
     setBusy(true);
     setLookup(null);
     try {
-      const { data, error } = await supabase.rpc("verify_pass", {
-        _pass_code: passCode.trim(),
-      });
+      // --- RESILIENT SCANNER FIX (Option B) ---
+      // We perform direct table queries instead of relying on the broken RPC function.
+      
+      const today = new Date().toISOString().slice(0, 10);
+      const isoWeekday = ((new Date().getDay() + 6) % 7) + 1; // 1=Mon..7=Sun
 
-      if (error) throw error;
+      // 1. Find profile by pass code
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("user_id, name, surname")
+        .eq("qr_code_pass", passCode.trim())
+        .maybeSingle();
 
-      const result = data as VerifyResult;
-      if (!result) {
-        toast({ title: "Invalid response", variant: "destructive" });
+      if (profileError) throw profileError;
+      if (!profile) {
+        setLookup({
+          ok: false,
+          status: "invalid",
+          message: "QR code not found",
+          name: null,
+          surname: null,
+          plan_name: null,
+          valid_until: null,
+          subscription_id: null,
+          user_id: null
+        });
+        toast({ title: "QR Code Not Found", variant: "destructive" });
         return;
       }
 
-      setLookup(result);
+      // 2. Find active subscription
+      const { data: sub, error: subError } = await supabase
+        .from("subscriptions")
+        .select(`
+          id, 
+          end_date, 
+          status,
+          meal_plans (
+            name,
+            allowed_weekdays
+          )
+        `)
+        .eq("user_id", profile.user_id)
+        .eq("status", "active")
+        .maybeSingle();
 
-      if (result.status === "invalid") {
-        toast({
-          title: "QR Code Not Found",
-          description: "This QR code is not recognized.",
-          variant: "destructive",
+      if (subError) throw subError;
+
+      const plan = sub?.meal_plans as any;
+      const isPaid = !!sub && sub.end_date! >= today;
+      const planCoversToday = plan?.allowed_weekdays?.includes(isoWeekday) ?? false;
+
+      if (!sub || !isPaid) {
+        setLookup({
+          ok: false,
+          status: "unpaid",
+          message: "Student does not have an active subscription",
+          name: profile.name,
+          surname: profile.surname,
+          plan_name: plan?.name || null,
+          valid_until: sub?.end_date || null,
+          subscription_id: sub?.id || null,
+          user_id: profile.user_id
         });
-      } else if (result.status === "already_served") {
-        toast({
-          title: "Already Served",
-          description: "This student has already redeemed their meal today.",
-          variant: "destructive",
-        });
-      } else if (result.status === "unpaid") {
-        toast({
-          title: "Payment Required",
-          description: "This student does not have an active subscription.",
-          variant: "destructive",
-        });
-      } else if (result.status === "not_eligible") {
-        toast({
-          title: "Not Eligible Today",
-          description: "This student's plan does not cover today.",
-          variant: "destructive",
-        });
+        toast({ title: "Payment Required", variant: "destructive" });
+        return;
       }
+
+      if (!planCoversToday) {
+        setLookup({
+          ok: false,
+          status: "not_eligible",
+          message: "Plan does not cover today",
+          name: profile.name,
+          surname: profile.surname,
+          plan_name: plan.name,
+          valid_until: sub.end_date,
+          subscription_id: sub.id,
+          user_id: profile.user_id
+        });
+        toast({ title: "Not Eligible Today", variant: "destructive" });
+        return;
+      }
+
+      // 3. Check for double redemption
+      const { data: alreadyServed, error: redemptionError } = await supabase
+        .from("meal_redemptions")
+        .select("id")
+        .eq("subscription_id", sub.id)
+        .eq("redeemed_on", today)
+        .maybeSingle();
+
+      if (redemptionError) throw redemptionError;
+
+      if (alreadyServed) {
+        setLookup({
+          ok: false,
+          status: "already_served",
+          message: "Student already ate today",
+          name: profile.name,
+          surname: profile.surname,
+          plan_name: plan.name,
+          valid_until: sub.end_date,
+          subscription_id: sub.id,
+          user_id: profile.user_id
+        });
+        toast({ title: "Already Served", variant: "destructive" });
+        return;
+      }
+
+      // 4. All good!
+      setLookup({
+        ok: true,
+        status: "eligible",
+        message: "Eligible for meal",
+        name: profile.name,
+        surname: profile.surname,
+        plan_name: plan.name,
+        valid_until: sub.end_date,
+        subscription_id: sub.id,
+        user_id: profile.user_id
+      });
+
     } catch (e: any) {
       toast({ title: "Verification failed", description: e.message, variant: "destructive" });
     } finally {
@@ -95,7 +179,6 @@ const KitchenDashboard = () => {
   const startScanner = async () => {
     setScanning(true);
     setLookup(null);
-    // Wait for the DOM node to mount
     await new Promise((r) => setTimeout(r, 50));
     try {
       const qr = new Html5Qrcode(SCANNER_ID);
@@ -131,28 +214,33 @@ const KitchenDashboard = () => {
     if (!lookup || !user) return;
     setBusy(true);
     try {
-      const { data, error } = await supabase.rpc("serve_meal_by_pass", {
-        _pass_code: manualPass.trim() || lookup.user_id,
-        _kitchen_user_id: user.id,
-      });
-
-      if (error) throw error;
-
-      const result = data as any;
-      if (result.ok) {
-        toast({
-          title: "Meal Served",
-          description: `${result.name ?? "Student"}'s meal recorded successfully.`,
+      // --- RESILIENT SERVE FIX ---
+      // Direct insert instead of RPC
+      const today = new Date().toISOString().slice(0, 10);
+      
+      const { error } = await supabase
+        .from("meal_redemptions")
+        .insert({
+          subscription_id: lookup.subscription_id,
+          user_id: lookup.user_id,
+          redeemed_on: today,
+          redeemed_by: user.id
         });
-        setLookup(null);
-        setManualPass("");
-      } else {
-        toast({
-          title: "Failed to serve meal",
-          description: result.message,
-          variant: "destructive",
-        });
+
+      if (error) {
+        if (error.code === "23505") {
+          throw new Error("Student already ate today (Double-scan prevented)");
+        }
+        throw error;
       }
+
+      toast({
+        title: "Meal Served",
+        description: `${lookup.name ?? "Student"}'s meal recorded successfully.`,
+      });
+      setLookup(null);
+      setManualPass("");
+      
     } catch (e: any) {
       toast({
         title: "Could not record meal",
@@ -217,7 +305,6 @@ const KitchenDashboard = () => {
       </header>
 
       <main className="px-5 flex flex-col gap-6 mt-2">
-        {/* Scanner */}
         <section className="bg-card rounded-3xl p-6 ring-1 ring-border">
           <h2 className="font-serif text-lg text-foreground mb-4">Scan student QR</h2>
           {!scanning ? (
@@ -240,7 +327,6 @@ const KitchenDashboard = () => {
           )}
         </section>
 
-        {/* Manual lookup */}
         <section className="bg-card rounded-3xl p-6 ring-1 ring-border">
           <h2 className="font-serif text-lg text-foreground mb-3">Manual verification</h2>
           <p className="text-toast text-sm mb-4">Paste a QR pass code if their phone is offline.</p>
@@ -261,7 +347,6 @@ const KitchenDashboard = () => {
           </div>
         </section>
 
-        {/* Result */}
         {lookup && (
           <section className="bg-card rounded-3xl p-6 ring-1 ring-border">
             <div className="flex items-start justify-between mb-5">
