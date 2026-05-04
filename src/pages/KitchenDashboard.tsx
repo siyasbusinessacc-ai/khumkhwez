@@ -31,9 +31,19 @@ const KitchenDashboard = () => {
   const [manualPass, setManualPass] = useState("");
   const [lookup, setLookup] = useState<VerifyResult | null>(null);
   const [busy, setBusy] = useState(false);
+  const [slots, setSlots] = useState<{ id: string; label: string; capacity: number }[]>([]);
+  const [slotId, setSlotId] = useState<string>("");
+  const [slotRemaining, setSlotRemaining] = useState<number | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
 
   useEffect(() => {
+    const today = new Date();
+    const isoDow = ((today.getDay() + 6) % 7) + 1;
+    supabase.from("meal_slots").select("id,label,capacity,weekdays,is_active").eq("is_active", true)
+      .then(({ data }) => {
+        const filtered = ((data as any[]) ?? []).filter(s => (s.weekdays as number[]).includes(isoDow));
+        setSlots(filtered);
+      });
     return () => {
       if (scannerRef.current) {
         scannerRef.current.stop().catch(() => {});
@@ -41,6 +51,14 @@ const KitchenDashboard = () => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!slotId) { setSlotRemaining(null); return; }
+    const today = new Date().toISOString().slice(0, 10);
+    supabase.rpc("slot_remaining_capacity", { _slot_id: slotId, _date: today })
+      .then(({ data }) => setSlotRemaining(typeof data === "number" ? data : null));
+  }, [slotId, lookup]);
+
 
   const verifyPassCode = async (passCode: string) => {
     setBusy(true);
@@ -214,17 +232,16 @@ const KitchenDashboard = () => {
     if (!lookup || !user) return;
     setBusy(true);
     try {
-      // --- RESILIENT SERVE FIX ---
-      // Direct insert instead of RPC
       const today = new Date().toISOString().slice(0, 10);
-      
+
       const { error } = await supabase
         .from("meal_redemptions")
         .insert({
           subscription_id: lookup.subscription_id,
           user_id: lookup.user_id,
           redeemed_on: today,
-          redeemed_by: user.id
+          redeemed_by: user.id,
+          slot_id: slotId || null,
         });
 
       if (error) {
@@ -234,13 +251,27 @@ const KitchenDashboard = () => {
         throw error;
       }
 
+      // Capacity check (post-insert) — block if slot now over capacity
+      if (slotId) {
+        const { data: rem } = await supabase.rpc("slot_remaining_capacity", { _slot_id: slotId, _date: today });
+        if (typeof rem === "number" && rem < 0) {
+          // Roll back
+          await supabase.from("meal_redemptions")
+            .delete()
+            .eq("subscription_id", lookup.subscription_id)
+            .eq("redeemed_on", today);
+          throw new Error("Slot is at capacity");
+        }
+        setSlotRemaining(typeof rem === "number" ? rem : null);
+      }
+
       toast({
         title: "Meal Served",
         description: `${lookup.name ?? "Student"}'s meal recorded successfully.`,
       });
       setLookup(null);
       setManualPass("");
-      
+
     } catch (e: any) {
       toast({
         title: "Could not record meal",
@@ -251,6 +282,7 @@ const KitchenDashboard = () => {
       setBusy(false);
     }
   };
+
 
   if (rolesLoading) {
     return <div className="min-h-dvh bg-background flex items-center justify-center text-toast">Loading…</div>;
