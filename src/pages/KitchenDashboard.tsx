@@ -337,6 +337,29 @@ const KitchenDashboard = () => {
       </header>
 
       <main className="px-5 flex flex-col gap-6 mt-2">
+        {slots.length > 0 && (
+          <section className="bg-card rounded-3xl p-5 ring-1 ring-border">
+            <h2 className="font-serif text-lg text-foreground mb-3">Service slot</h2>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setSlotId("")}
+                className={`text-xs px-3 py-2 rounded-full ring-1 ${!slotId ? "bg-primary/20 text-brass ring-primary/40" : "bg-secondary text-toast ring-border"}`}
+              >No slot</button>
+              {slots.map(s => (
+                <button key={s.id}
+                  onClick={() => setSlotId(s.id)}
+                  className={`text-xs px-3 py-2 rounded-full ring-1 ${slotId === s.id ? "bg-primary/20 text-brass ring-primary/40" : "bg-secondary text-toast ring-border"}`}
+                >{s.label}</button>
+              ))}
+            </div>
+            {slotId && slotRemaining !== null && (
+              <p className="text-toast text-xs mt-3">
+                {slotRemaining > 0 ? `${slotRemaining} seats remaining` : <span className="text-destructive font-medium">SLOT FULL</span>}
+              </p>
+            )}
+          </section>
+        )}
+
         <section className="bg-card rounded-3xl p-6 ring-1 ring-border">
           <h2 className="font-serif text-lg text-foreground mb-4">Scan student QR</h2>
           {!scanning ? (
