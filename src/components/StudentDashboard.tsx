@@ -404,9 +404,7 @@ const StudentDashboard = () => {
 
     setPendingPlanName(pending?.meal_plans?.name ?? null);
 
-    // Wallet + tier summary
-    const { data: ws } = await (supabase as any).rpc("get_my_wallet_summary");
-    if (ws) setWallet(ws as WalletSummary);
+    // wallet/tier moved to Referral tab
 
     setLoadingSub(false);
   }, [user]);
