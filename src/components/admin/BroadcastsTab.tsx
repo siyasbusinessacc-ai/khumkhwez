@@ -37,12 +37,12 @@ export const BroadcastsTab = () => {
   const send = async () => {
     if (!form.title.trim() || !form.body.trim()) return toast({ title: "Title and body required", variant: "destructive" });
     setBusy(true);
-    const { error } = await supabase.from("broadcasts").insert({
+    const { error } = await supabase.from("broadcasts").insert([{
       title: form.title.trim(),
       body: form.body.trim(),
       target: form.target,
-      target_tier: form.target === "tier" ? form.target_tier : null,
-    });
+      target_tier: form.target === "tier" ? (form.target_tier as "bronze" | "silver" | "gold" | "elite") : null,
+    }]);
     setBusy(false);
     if (error) return toast({ title: "Send failed", description: error.message, variant: "destructive" });
     toast({ title: "Broadcast sent" });
