@@ -310,74 +310,7 @@ const PlanSelector = ({
   );
 };
 
-// =====================================================
-// Menu preview (kept — visual only)
-// =====================================================
-const menuItems = [
-  {
-    name: "Suya-Spiced Ribeye",
-    desc: "Charred over open coals, with smoked plantain puree and wild rocket.",
-    image: menuRibeye,
-    tag: "Main",
-  },
-  {
-    name: "Jollof Arancini",
-    desc: "Crispy rice spheres with braised ox-tail and spicy tomato emulsion.",
-    image: menuArancini,
-    tag: "Starter",
-  },
-];
-
-const MenuPreview = () => (
-  <div id="menu" className="flex flex-col gap-4">
-    <div className="flex items-baseline justify-between">
-      <h2 className="font-serif text-xl text-foreground">Tonight's Offerings</h2>
-      <span className="text-toast text-xs uppercase tracking-wide">Sample menu</span>
-    </div>
-    <div className="flex flex-col gap-3">
-      {menuItems.map((item) => (
-        <div
-          key={item.name}
-          className="group flex gap-4 items-center bg-card/50 hover:bg-card p-3 rounded-2xl transition-colors ring-1 ring-transparent hover:ring-border"
-        >
-          <div className="size-20 shrink-0 bg-secondary rounded-xl overflow-hidden ring-1 ring-border">
-            <img
-              src={item.image}
-              loading="lazy"
-              width={640}
-              height={640}
-              className="w-full h-full object-cover opacity-80 mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-500"
-              alt={item.name}
-            />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="text-foreground font-medium truncate">{item.name}</h3>
-            <p className="text-toast text-sm mt-1 line-clamp-2 leading-relaxed">{item.desc}</p>
-          </div>
-        </div>
-      ))}
-      <div className="group flex gap-4 items-center bg-card/50 hover:bg-card p-3 rounded-2xl transition-colors ring-1 ring-transparent hover:ring-border mt-1">
-        <div className="size-20 shrink-0 rounded-xl overflow-hidden ring-1 ring-primary/20">
-          <img
-            src={shishaPairing}
-            loading="lazy"
-            width={640}
-            height={640}
-            className="w-full h-full object-cover opacity-80 mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-500"
-            alt="Shisha pairing"
-          />
-        </div>
-        <div className="min-w-0 flex-1">
-          <span className="text-xs font-medium text-primary tracking-wide uppercase px-2 py-0.5 rounded-sm bg-accent/30">
-            Pairing
-          </span>
-          <h3 className="text-foreground font-medium mt-1 truncate">Cardamom & Honey</h3>
-          <p className="text-toast text-sm truncate">Slow-burning dark leaf blend.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+// MenuPreview replaced by WeeklyMenuView (admin-managed weekly menu)
 
 // =====================================================
 // Main
