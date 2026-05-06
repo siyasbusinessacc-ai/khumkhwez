@@ -8,10 +8,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Logo } from "@/components/Logo";
 import { BroadcastInbox } from "@/components/BroadcastInbox";
 import { Sidebar } from "@/components/Sidebar";
+import { SlotBookingCard } from "@/components/SlotBookingCard";
+import { WeeklyMenuView } from "@/components/WeeklyMenuView";
 import type { Tables } from "@/integrations/supabase/types";
-import menuRibeye from "@/assets/menu-ribeye.jpg";
-import menuArancini from "@/assets/menu-arancini.jpg";
-import shishaPairing from "@/assets/shisha-pairing.jpg";
 
 type Profile = Tables<"profiles">;
 type MealPlan = Tables<"meal_plans">;
@@ -502,7 +501,8 @@ const StudentDashboard = () => {
         ) : (
           <PlanSelector plans={plans} userId={user!.id} onCreated={loadAll} />
         )}
-        <MenuPreview />
+        {activeSub && <SlotBookingCard />}
+        <WeeklyMenuView />
       </main>
     </div>
   );
