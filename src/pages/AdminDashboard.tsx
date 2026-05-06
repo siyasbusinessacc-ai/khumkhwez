@@ -16,6 +16,7 @@ import { OffersTab } from "@/components/admin/OffersTab";
 import { BroadcastsTab } from "@/components/admin/BroadcastsTab";
 import { SlotsTab } from "@/components/admin/SlotsTab";
 import { AnalyticsTab } from "@/components/admin/AnalyticsTab";
+import { MenusTab } from "@/components/admin/MenusTab";
 
 type Stats = {
   meals_today: number;
@@ -437,6 +438,7 @@ const AdminDashboard = () => {
           <TabsList className="bg-secondary p-1 rounded-xl flex-wrap h-auto">
             <TabsTrigger value="overview" className="rounded-lg">Overview</TabsTrigger>
             <TabsTrigger value="users" className="rounded-lg">Users</TabsTrigger>
+            <TabsTrigger value="menus" className="rounded-lg">Menus</TabsTrigger>
             <TabsTrigger value="offers" className="rounded-lg">Offers</TabsTrigger>
             <TabsTrigger value="slots" className="rounded-lg">Slots</TabsTrigger>
             <TabsTrigger value="broadcasts" className="rounded-lg">Messages</TabsTrigger>
@@ -447,6 +449,7 @@ const AdminDashboard = () => {
 
           <TabsContent value="overview"><Overview stats={stats} refresh={loadData} /></TabsContent>
           <TabsContent value="users"><UsersTab plans={plans} refreshStats={loadData} /></TabsContent>
+          <TabsContent value="menus"><MenusTab /></TabsContent>
           <TabsContent value="offers"><OffersTab plans={plans} /></TabsContent>
           <TabsContent value="slots"><SlotsTab /></TabsContent>
           <TabsContent value="broadcasts"><BroadcastsTab /></TabsContent>

@@ -74,9 +74,23 @@ export const OffersTab = ({ plans }: { plans: Plan[] }) => {
       applicable_plan_ids: form.applicable_plan_ids,
     };
     const { error } = await supabase.from("offers").insert(payload);
+    if (error) {
+      setBusy(false);
+      return toast({ title: "Could not save", description: error.message, variant: "destructive" });
+    }
+    // Auto-broadcast to all students so they see the new offer
+    const discountText = form.discount_type === "percent"
+      ? `${form.discount_value}% off`
+      : `R${form.discount_value} off`;
+    await supabase.rpc("admin_create_offer_broadcast", {
+      _offer_code: payload.code,
+      _title: `New offer: ${payload.name}`,
+      _body: `Use code ${payload.code} for ${discountText}.${payload.description ? " " + payload.description : ""}`,
+      _target: "all",
+      _target_tier: null,
+    });
     setBusy(false);
-    if (error) return toast({ title: "Could not save", description: error.message, variant: "destructive" });
-    toast({ title: "Offer created" });
+    toast({ title: "Offer created", description: "Students notified." });
     setOpen(false);
     setForm({ ...form, code: "", name: "", description: "" });
     load();
