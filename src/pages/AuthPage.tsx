@@ -57,7 +57,7 @@ const AuthPage = () => {
         const { error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
-          options: { emailRedirectTo: 'https://khumkhwez.pages.dev/auth/callback' },
+          options: { emailRedirectTo: `${window.location.origin}/` },
         });
         if (error) throw error;
         toast({ title: "Check your email", description: "We sent you a confirmation link." });
