@@ -208,6 +208,42 @@ export type Database = {
         }
         Relationships: []
       }
+      menu_items: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          menu_date: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          menu_date: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          menu_date?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       offer_redemptions: {
         Row: {
           applied_cents: number
@@ -429,6 +465,33 @@ export type Database = {
         }
         Relationships: []
       }
+      slot_bookings: {
+        Row: {
+          booking_date: string
+          created_at: string
+          id: string
+          slot_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          booking_date: string
+          created_at?: string
+          id?: string
+          slot_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          booking_date?: string
+          created_at?: string
+          id?: string
+          slot_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           activated_at: string | null
@@ -573,6 +636,16 @@ export type Database = {
         Args: { _subscription_id: string }
         Returns: Json
       }
+      admin_create_offer_broadcast: {
+        Args: {
+          _body: string
+          _offer_code: string
+          _target?: string
+          _target_tier?: Database["public"]["Enums"]["user_tier"]
+          _title: string
+        }
+        Returns: Json
+      }
       admin_dashboard_stats: { Args: never; Returns: Json }
       admin_find_user_by_email: {
         Args: { _email: string }
@@ -644,6 +717,8 @@ export type Database = {
         Args: { _subscription_id: string }
         Returns: Json
       }
+      book_slot: { Args: { _date: string; _slot_id: string }; Returns: Json }
+      cancel_my_booking: { Args: { _date: string }; Returns: Json }
       claim_first_admin: { Args: never; Returns: Json }
       credit_wallet: {
         Args: {
@@ -673,6 +748,42 @@ export type Database = {
           id: string
           is_read: boolean
           title: string
+        }[]
+      }
+      list_slots_for_date: {
+        Args: { _date: string }
+        Returns: {
+          booked: number
+          capacity: number
+          end_time: string
+          id: string
+          label: string
+          remaining: number
+          start_time: string
+          weekdays: number[]
+        }[]
+      }
+      menu_for_week: {
+        Args: { _week_start: string }
+        Returns: {
+          description: string
+          id: string
+          image_url: string
+          menu_date: string
+          sort_order: number
+          title: string
+        }[]
+      }
+      my_upcoming_bookings: {
+        Args: never
+        Returns: {
+          booking_date: string
+          end_time: string
+          id: string
+          slot_id: string
+          slot_label: string
+          start_time: string
+          status: string
         }[]
       }
       redeem_offer_code: {
