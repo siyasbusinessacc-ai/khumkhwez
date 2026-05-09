@@ -446,6 +446,8 @@ const KitchenDashboard = () => {
             </button>
           </section>
         )}
+
+        <WalkInOfferCard />
       </main>
     </div>
   );
