@@ -584,6 +584,42 @@ export type Database = {
         }
         Relationships: []
       }
+      walkin_redemptions: {
+        Row: {
+          customer_label: string | null
+          discount_cents: number
+          final_cents: number
+          id: string
+          offer_code: string
+          offer_id: string
+          original_cents: number
+          served_at: string
+          served_by: string | null
+        }
+        Insert: {
+          customer_label?: string | null
+          discount_cents: number
+          final_cents: number
+          id?: string
+          offer_code: string
+          offer_id: string
+          original_cents: number
+          served_at?: string
+          served_by?: string | null
+        }
+        Update: {
+          customer_label?: string | null
+          discount_cents?: number
+          final_cents?: number
+          id?: string
+          offer_code?: string
+          offer_id?: string
+          original_cents?: number
+          served_at?: string
+          served_by?: string | null
+        }
+        Relationships: []
+      }
       wallet_transactions: {
         Row: {
           balance_after_cents: number
@@ -710,6 +746,15 @@ export type Database = {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _target_user: string
+        }
+        Returns: Json
+      }
+      apply_walkin_offer: {
+        Args: {
+          _code: string
+          _commit?: boolean
+          _customer_label?: string
+          _price_cents: number
         }
         Returns: Json
       }
