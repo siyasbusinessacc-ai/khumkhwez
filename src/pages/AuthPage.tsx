@@ -54,13 +54,17 @@ const AuthPage = () => {
     setLoading(true);
     try {
       if (mode === "signup") {
+        const refCode = (referralCode || localStorage.getItem(REF_KEY) || "").trim().toUpperCase();
         const { error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
-          options: { emailRedirectTo: `${window.location.origin}/` },
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+            data: refCode ? { referral_code: refCode } : undefined,
+          },
         });
         if (error) throw error;
-        toast({ title: "Check your email", description: "We sent you a confirmation link." });
+        toast({ title: "Check your email", description: "Confirm your email — you'll be signed in automatically." });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (error) throw error;
