@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserRoles } from "@/hooks/useUserRoles";
 import { useToast } from "@/hooks/use-toast";
 import { Logo } from "@/components/Logo";
+import { WalkInOfferCard } from "@/components/kitchen/WalkInOfferCard";
 
 type VerifyResult = {
   ok: boolean;
@@ -445,6 +446,8 @@ const KitchenDashboard = () => {
             </button>
           </section>
         )}
+
+        <WalkInOfferCard />
       </main>
     </div>
   );
