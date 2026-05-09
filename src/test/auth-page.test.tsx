@@ -5,8 +5,7 @@ import AuthPage from "@/pages/AuthPage";
 
 const mockSignUp = vi.fn();
 const mockSignInWithPassword = vi.fn();
-const mockSignInWithOtp = vi.fn();
-const mockVerifyOtp = vi.fn();
+const mockResetPassword = vi.fn();
 const mockNavigate = vi.fn();
 const mockToast = vi.fn();
 
@@ -15,9 +14,9 @@ vi.mock("@/integrations/supabase/client", () => ({
     auth: {
       signUp: (...a: any[]) => mockSignUp(...a),
       signInWithPassword: (...a: any[]) => mockSignInWithPassword(...a),
-      signInWithOtp: (...a: any[]) => mockSignInWithOtp(...a),
-      verifyOtp: (...a: any[]) => mockVerifyOtp(...a),
+      resetPasswordForEmail: (...a: any[]) => mockResetPassword(...a),
     },
+    rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
   },
 }));
 
@@ -40,26 +39,20 @@ const renderPage = () =>
 describe("AuthPage", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("renders email form by default", () => {
+  it("renders email login form by default", () => {
     renderPage();
     expect(screen.getByPlaceholderText("Email address")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Password")).toBeInTheDocument();
-  });
-
-  it("toggles to phone method", () => {
-    renderPage();
-    fireEvent.click(screen.getByRole("button", { name: "Phone" }));
-    expect(screen.getByPlaceholderText("+27 81 234 5678")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sign In" })).toBeInTheDocument();
   });
 
   it("toggles between login and signup modes", () => {
     renderPage();
-    expect(screen.getByRole("button", { name: "Sign In" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Sign up" }));
     expect(screen.getByRole("button", { name: "Create Account" })).toBeInTheDocument();
   });
 
-  it("calls signInWithPassword on email login submit", async () => {
+  it("calls signInWithPassword on login submit", async () => {
     mockSignInWithPassword.mockResolvedValue({ error: null });
     renderPage();
     fireEvent.change(screen.getByPlaceholderText("Email address"), { target: { value: "a@b.com" } });
@@ -71,19 +64,44 @@ describe("AuthPage", () => {
     await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/"));
   });
 
-  it("calls signUp on email signup submit", async () => {
+  it("blocks signup when password is weak", async () => {
+    renderPage();
+    fireEvent.click(screen.getByRole("button", { name: "Sign up" }));
+    fireEvent.change(screen.getByPlaceholderText("Email address"), { target: { value: "new@b.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "weakpass" } });
+    fireEvent.click(screen.getByRole("button", { name: "Create Account" }));
+    await waitFor(() =>
+      expect(mockToast).toHaveBeenCalledWith(expect.objectContaining({ title: "Weak password" }))
+    );
+    expect(mockSignUp).not.toHaveBeenCalled();
+  });
+
+  it("calls signUp when password is strong", async () => {
     mockSignUp.mockResolvedValue({ error: null });
     renderPage();
     fireEvent.click(screen.getByRole("button", { name: "Sign up" }));
     fireEvent.change(screen.getByPlaceholderText("Email address"), { target: { value: "new@b.com" } });
-    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "secret123" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "Strong1!Pass" } });
     fireEvent.click(screen.getByRole("button", { name: "Create Account" }));
     await waitFor(() =>
       expect(mockSignUp).toHaveBeenCalledWith(
-        expect.objectContaining({ email: "new@b.com", password: "secret123" })
+        expect.objectContaining({ email: "new@b.com", password: "Strong1!Pass" })
       )
     );
-    expect(mockToast).toHaveBeenCalledWith(expect.objectContaining({ title: "Check your email" }));
+  });
+
+  it("sends a password reset email from forgot mode", async () => {
+    mockResetPassword.mockResolvedValue({ error: null });
+    renderPage();
+    fireEvent.click(screen.getByRole("button", { name: "Forgot password?" }));
+    fireEvent.change(screen.getByPlaceholderText("Email address"), { target: { value: "a@b.com" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send reset link" }));
+    await waitFor(() =>
+      expect(mockResetPassword).toHaveBeenCalledWith(
+        "a@b.com",
+        expect.objectContaining({ redirectTo: expect.stringContaining("/reset-password") })
+      )
+    );
   });
 
   it("shows error toast when login fails", async () => {
@@ -97,25 +115,5 @@ describe("AuthPage", () => {
         expect.objectContaining({ title: "Error", variant: "destructive" })
       )
     );
-  });
-
-  it("phone flow sends OTP then verifies", async () => {
-    mockSignInWithOtp.mockResolvedValue({ error: null });
-    mockVerifyOtp.mockResolvedValue({ error: null });
-    renderPage();
-    fireEvent.click(screen.getByRole("button", { name: "Phone" }));
-    fireEvent.change(screen.getByPlaceholderText("+27 81 234 5678"), { target: { value: "+27811112222" } });
-    fireEvent.click(screen.getByRole("button", { name: "Send OTP" }));
-    await waitFor(() => expect(mockSignInWithOtp).toHaveBeenCalledWith({ phone: "+27811112222" }));
-
-    await waitFor(() => expect(screen.getByPlaceholderText("123456")).toBeInTheDocument());
-    fireEvent.change(screen.getByPlaceholderText("123456"), { target: { value: "654321" } });
-    fireEvent.click(screen.getByRole("button", { name: "Verify & Enter" }));
-    await waitFor(() =>
-      expect(mockVerifyOtp).toHaveBeenCalledWith(
-        expect.objectContaining({ phone: "+27811112222", token: "654321" })
-      )
-    );
-    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/"));
   });
 });
