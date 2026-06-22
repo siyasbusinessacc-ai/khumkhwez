@@ -77,6 +77,15 @@ const AuthPage = () => {
           setLoading(false);
           return;
         }
+        if (password !== confirmPassword) {
+          toast({
+            title: "Passwords do not match",
+            description: "Please make sure both passwords are identical.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
         const refCode = (referralCode || localStorage.getItem(REF_KEY) || "").trim().toUpperCase();
         const { error } = await supabase.auth.signUp({
           email: email.trim(),
