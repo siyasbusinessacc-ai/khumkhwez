@@ -12,6 +12,7 @@ const AuthPage = () => {
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [referralCode, setReferralCode] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -71,6 +72,15 @@ const AuthPage = () => {
           toast({
             title: "Weak password",
             description: "Please meet all the password requirements.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
+        if (password !== confirmPassword) {
+          toast({
+            title: "Passwords do not match",
+            description: "Please make sure both passwords are identical.",
             variant: "destructive",
           });
           setLoading(false);
@@ -151,6 +161,19 @@ const AuthPage = () => {
               minLength={mode === "signup" ? 8 : 6}
               required
               autoComplete={mode === "signup" ? "new-password" : "current-password"}
+            />
+          )}
+
+          {mode === "signup" && (
+            <input
+              type="password"
+              placeholder="Confirm password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className={inputClass}
+              minLength={8}
+              required
+              autoComplete="new-password"
             />
           )}
 

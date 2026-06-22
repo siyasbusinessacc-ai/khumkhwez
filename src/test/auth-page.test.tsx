@@ -69,6 +69,7 @@ describe("AuthPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sign up" }));
     fireEvent.change(screen.getByPlaceholderText("Email address"), { target: { value: "new@b.com" } });
     fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "weakpass" } });
+    fireEvent.change(screen.getByPlaceholderText("Confirm password"), { target: { value: "weakpass" } });
     fireEvent.click(screen.getByRole("button", { name: "Create Account" }));
     await waitFor(() =>
       expect(mockToast).toHaveBeenCalledWith(expect.objectContaining({ title: "Weak password" }))
@@ -76,12 +77,26 @@ describe("AuthPage", () => {
     expect(mockSignUp).not.toHaveBeenCalled();
   });
 
-  it("calls signUp when password is strong", async () => {
+  it("blocks signup when passwords do not match", async () => {
+    renderPage();
+    fireEvent.click(screen.getByRole("button", { name: "Sign up" }));
+    fireEvent.change(screen.getByPlaceholderText("Email address"), { target: { value: "new@b.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "Strong1!Pass" } });
+    fireEvent.change(screen.getByPlaceholderText("Confirm password"), { target: { value: "Mismatch1!" } });
+    fireEvent.click(screen.getByRole("button", { name: "Create Account" }));
+    await waitFor(() =>
+      expect(mockToast).toHaveBeenCalledWith(expect.objectContaining({ title: "Passwords do not match" }))
+    );
+    expect(mockSignUp).not.toHaveBeenCalled();
+  });
+
+  it("calls signUp when password is strong and confirmed", async () => {
     mockSignUp.mockResolvedValue({ error: null });
     renderPage();
     fireEvent.click(screen.getByRole("button", { name: "Sign up" }));
     fireEvent.change(screen.getByPlaceholderText("Email address"), { target: { value: "new@b.com" } });
     fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "Strong1!Pass" } });
+    fireEvent.change(screen.getByPlaceholderText("Confirm password"), { target: { value: "Strong1!Pass" } });
     fireEvent.click(screen.getByRole("button", { name: "Create Account" }));
     await waitFor(() =>
       expect(mockSignUp).toHaveBeenCalledWith(
