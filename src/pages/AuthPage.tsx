@@ -164,6 +164,19 @@ const AuthPage = () => {
             />
           )}
 
+          {mode === "signup" && (
+            <input
+              type="password"
+              placeholder="Confirm password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className={inputClass}
+              minLength={8}
+              required
+              autoComplete="new-password"
+            />
+          )}
+
           {mode === "signup" && password.length > 0 && (
             <PasswordStrengthMeter password={password} />
           )}
