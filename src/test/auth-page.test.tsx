@@ -61,7 +61,7 @@ describe("AuthPage", () => {
     await waitFor(() =>
       expect(mockSignInWithPassword).toHaveBeenCalledWith({ email: "a@b.com", password: "secret123" })
     );
-    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/"));
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/app"));
   });
 
   it("blocks signup when password is weak", async () => {
