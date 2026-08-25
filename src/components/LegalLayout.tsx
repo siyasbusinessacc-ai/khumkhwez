@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 
 type Section = { heading?: string; paragraphs?: string[]; bullets?: string[] };
@@ -10,7 +10,9 @@ interface LegalLayoutProps {
   sections: Section[];
 }
 
-export const LegalLayout = ({ title, updated, intro, sections }: LegalLayoutProps) => (
+export const LegalLayout = ({ title, updated, intro, sections }: LegalLayoutProps) => {
+  const navigate = useNavigate();
+  return (
   <div className="min-h-dvh bg-background">
     <header className="px-5 py-6 border-b border-border">
       <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
@@ -61,11 +63,14 @@ export const LegalLayout = ({ title, updated, intro, sections }: LegalLayoutProp
         <footer className="mt-10 pt-6 border-t border-border flex flex-wrap gap-4 text-sm">
           <Link to="/terms" className="text-brass hover:underline">Terms &amp; Conditions</Link>
           <Link to="/privacy" className="text-brass hover:underline">Privacy Policy</Link>
-          <Link to="/" className="text-toast hover:text-foreground transition-colors">Back to home</Link>
+          <button type="button" onClick={() => navigate(-1)} className="text-toast hover:text-foreground transition-colors">
+            ← Go back
+          </button>
         </footer>
       </article>
     </main>
   </div>
-);
+  );
+};
 
 export default LegalLayout;
