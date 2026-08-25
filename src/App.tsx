@@ -14,6 +14,8 @@ import ProfilePage from "./pages/ProfilePage";
 import KitchenDashboard from "./pages/KitchenDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import ReferralPage from "./pages/ReferralPage";
+import TermsPage from "./pages/TermsPage";
+import PrivacyPage from "./pages/PrivacyPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
