@@ -204,7 +204,7 @@ const AuthPage = () => {
           )}
 
           {mode === "signup" && (
-            <label className="flex items-start gap-3 text-xs text-toast leading-relaxed cursor-pointer">
+            <label className="flex items-start gap-3 text-xs text-toast leading-relaxed cursor-pointer bg-secondary/60 ring-1 ring-border rounded-xl px-4 py-3">
               <input
                 type="checkbox"
                 checked={acceptedTerms}
@@ -214,11 +214,11 @@ const AuthPage = () => {
               />
               <span>
                 I have read, understood and agree to the{" "}
-                <Link to="/terms" target="_blank" className="text-primary hover:underline">
+                <Link to="/terms" className="text-primary hover:underline">
                   Terms &amp; Conditions
                 </Link>{" "}
                 and the{" "}
-                <Link to="/privacy" target="_blank" className="text-primary hover:underline">
+                <Link to="/privacy" className="text-primary hover:underline">
                   Privacy Policy
                 </Link>
                 .
