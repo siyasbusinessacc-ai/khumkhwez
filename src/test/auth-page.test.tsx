@@ -97,6 +97,7 @@ describe("AuthPage", () => {
     fireEvent.change(screen.getByPlaceholderText("Email address"), { target: { value: "new@b.com" } });
     fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "Strong1!Pass" } });
     fireEvent.change(screen.getByPlaceholderText("Confirm password"), { target: { value: "Strong1!Pass" } });
+    fireEvent.click(screen.getByLabelText(/Terms & Conditions and Privacy Policy/i));
     fireEvent.click(screen.getByRole("button", { name: "Create Account" }));
     await waitFor(() =>
       expect(mockSignUp).toHaveBeenCalledWith(
