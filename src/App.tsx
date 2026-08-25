@@ -72,6 +72,8 @@ const App = () => (
             <Route path="/" element={<Landing />} />
             <Route path="/get-app" element={<GetApp />} />
             <Route path="/app" element={<AppRoute />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/auth" element={<Navigate to="/app" replace />} />
             <Route path="/auth/callback" element={<AppRoute />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
