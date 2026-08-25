@@ -203,9 +203,37 @@ const AuthPage = () => {
             </div>
           )}
 
-          <button type="submit" disabled={loading} className={btnPrimary}>
+          {mode === "signup" && (
+            <label className="flex items-start gap-3 text-xs text-toast leading-relaxed cursor-pointer">
+              <input
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-primary rounded"
+                aria-label="I have read and agree to the Terms & Conditions and Privacy Policy"
+              />
+              <span>
+                I have read, understood and agree to the{" "}
+                <Link to="/terms" target="_blank" className="text-primary hover:underline">
+                  Terms &amp; Conditions
+                </Link>{" "}
+                and the{" "}
+                <Link to="/privacy" target="_blank" className="text-primary hover:underline">
+                  Privacy Policy
+                </Link>
+                .
+              </span>
+            </label>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading || (mode === "signup" && !acceptedTerms)}
+            className={btnPrimary}
+          >
             {loading ? "Please wait..." : ctaLabel}
           </button>
+
 
           {mode === "forgot" && (
             <button
