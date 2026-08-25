@@ -87,12 +87,20 @@ const Landing = () => {
       {/* Nav */}
       <header className="flex items-center justify-between px-5 sm:px-8 py-4 max-w-6xl mx-auto">
         <Logo size={44} to="/" />
-        <Link
-          to="/auth"
-          className="text-sm font-medium text-toast hover:text-brass transition-colors"
-        >
-          Open Web App
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            to="/app"
+            className="text-sm font-medium text-toast hover:text-brass transition-colors"
+          >
+            Login
+          </Link>
+          <Link
+            to="/get-app"
+            className="text-sm font-semibold bg-secondary text-foreground ring-1 ring-primary/30 px-4 py-2 rounded-xl hover:opacity-90 transition-opacity"
+          >
+            Open Web App
+          </Link>
+        </div>
       </header>
 
       {/* Hero */}
@@ -217,7 +225,7 @@ const Landing = () => {
                   ))}
                 </ul>
                 <Link
-                  to="/auth"
+                  to="/get-app"
                   className={`mt-auto text-center font-bold py-3.5 rounded-xl transition-opacity hover:opacity-90 ${
                     p.featured
                       ? "bg-primary text-primary-foreground"
@@ -243,12 +251,12 @@ const Landing = () => {
             high-quality meals every single day without delays, we cannot accept everyone. Once these
             intake spots are gone, you will be placed on a waitlist for next month at higher rates.
           </p>
-          <button
-            onClick={scrollToPricing}
-            className="mt-7 bg-primary text-primary-foreground font-bold uppercase tracking-wide px-7 py-3.5 rounded-2xl hover:opacity-90 transition-opacity"
+          <Link
+            to="/get-app"
+            className="inline-block mt-7 bg-primary text-primary-foreground font-bold uppercase tracking-wide px-7 py-3.5 rounded-2xl hover:opacity-90 transition-opacity"
           >
             Secure My Spot Now
-          </button>
+          </Link>
         </div>
       </section>
 
@@ -258,7 +266,7 @@ const Landing = () => {
           <Logo size={40} to="/" />
           <p className="text-toast text-sm">
             Already a member?{" "}
-            <Link to="/auth" className="text-brass font-semibold hover:underline">
+            <Link to="/app" className="text-brass font-semibold hover:underline">
               Open Web App
             </Link>
           </p>
