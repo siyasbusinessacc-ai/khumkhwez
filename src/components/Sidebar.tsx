@@ -13,9 +13,9 @@ export const Sidebar = () => {
   const { isKitchen, isAdmin } = useUserRoles();
 
   const menuItems = [
-    { label: "Dashboard", icon: Home, path: "/" },
+    { label: "Dashboard", icon: Home, path: "/app" },
     { label: "Profile", icon: User, path: "/profile" },
-    { label: "Packages", icon: Package, path: "/" }, // Usually anchors to plan selector
+    { label: "Packages", icon: Package, path: "/app" }, // Usually anchors to plan selector
     { label: "Referrals", icon: PieChart, path: "/refer" },
     { label: "Help", icon: HelpCircle, path: "#" },
   ];
@@ -35,7 +35,7 @@ export const Sidebar = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate("/auth");
+    navigate("/app");
   };
 
   return (

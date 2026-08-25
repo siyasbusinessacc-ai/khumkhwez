@@ -48,7 +48,7 @@ const ResetPasswordPage = () => {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       toast({ title: "Password updated", description: "You're now signed in." });
-      navigate("/");
+      navigate("/app");
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
@@ -70,7 +70,7 @@ const ResetPasswordPage = () => {
         {error ? (
           <div className="flex flex-col gap-4">
             <p className="text-sm text-destructive text-center">{error}</p>
-            <button onClick={() => navigate("/auth")} className={btnPrimary}>Back to sign in</button>
+            <button onClick={() => navigate("/app")} className={btnPrimary}>Back to sign in</button>
           </div>
         ) : !ready ? (
           <p className="text-toast text-sm text-center">Verifying reset link...</p>

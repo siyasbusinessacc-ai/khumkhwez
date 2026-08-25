@@ -295,7 +295,7 @@ const KitchenDashboard = () => {
         <h1 className="font-serif text-2xl text-foreground">Kitchen access only</h1>
         <p className="text-toast max-w-md">Your account doesn't have kitchen permissions. Ask an admin to grant you the kitchen role.</p>
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/app")}
           className="mt-2 px-5 py-3 rounded-xl bg-secondary ring-1 ring-border text-foreground hover:ring-primary/40"
         >
           Back to dashboard

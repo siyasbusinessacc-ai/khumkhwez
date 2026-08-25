@@ -86,7 +86,7 @@ const Landing = () => {
 
       {/* Nav */}
       <header className="flex items-center justify-between px-5 sm:px-8 py-4 max-w-6xl mx-auto">
-        <Logo size={44} />
+        <Logo size={44} to="/" />
         <Link
           to="/auth"
           className="text-sm font-medium text-toast hover:text-brass transition-colors"
@@ -255,7 +255,7 @@ const Landing = () => {
       {/* Footer */}
       <footer className="px-5 py-10 border-t border-border">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-5">
-          <Logo size={40} />
+          <Logo size={40} to="/" />
           <p className="text-toast text-sm">
             Already a member?{" "}
             <Link to="/auth" className="text-brass font-semibold hover:underline">

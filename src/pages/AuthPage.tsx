@@ -91,7 +91,7 @@ const AuthPage = () => {
           email: email.trim(),
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}/app`,
             data: refCode ? { referral_code: refCode } : undefined,
           },
         });
@@ -107,7 +107,7 @@ const AuthPage = () => {
         });
         if (error) throw error;
         await tryRedeemPendingReferral();
-        navigate("/");
+        navigate("/app");
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
