@@ -36,28 +36,26 @@ const RecoveryRedirect = () => {
   return null;
 };
 
+const Loader = () => (
+  <div className="min-h-dvh bg-background flex items-center justify-center">
+    <p className="text-toast">Loading...</p>
+  </div>
+);
+
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   if (isRecoveryHash()) return <Navigate to="/reset-password" replace />;
-  if (loading) return <div className="min-h-dvh bg-background flex items-center justify-center"><p className="text-toast">Loading...</p></div>;
-  if (!user) return <Navigate to="/auth" replace />;
+  if (loading) return <Loader />;
+  if (!user) return <Navigate to="/app" replace />;
   return <>{children}</>;
 };
 
-const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+// /app — the actual student application: auth screen when logged out, dashboard when logged in.
+const AppRoute = () => {
   const { user, loading } = useAuth();
   if (isRecoveryHash()) return <Navigate to="/reset-password" replace />;
-  if (loading) return <div className="min-h-dvh bg-background flex items-center justify-center"><p className="text-toast">Loading...</p></div>;
-  if (user) return <Navigate to="/" replace />;
-  return <>{children}</>;
-};
-
-// Marketing landing page for visitors, dashboard for signed-in members.
-const HomeRoute = () => {
-  const { user, loading } = useAuth();
-  if (isRecoveryHash()) return <Navigate to="/reset-password" replace />;
-  if (loading) return <div className="min-h-dvh bg-background flex items-center justify-center"><p className="text-toast">Loading...</p></div>;
-  return user ? <Index /> : <Landing />;
+  if (loading) return <Loader />;
+  return user ? <Index /> : <AuthPage />;
 };
 
 const App = () => (
@@ -69,14 +67,16 @@ const App = () => (
         <AuthProvider>
           <RecoveryRedirect />
           <Routes>
-            <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
+            <Route path="/" element={<Landing />} />
+            <Route path="/get-app" element={<GetApp />} />
+            <Route path="/app" element={<AppRoute />} />
+            <Route path="/auth" element={<Navigate to="/app" replace />} />
+            <Route path="/auth/callback" element={<AppRoute />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/" element={<HomeRoute />} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
             <Route path="/kitchen" element={<ProtectedRoute><KitchenDashboard /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
             <Route path="/refer" element={<ProtectedRoute><ReferralPage /></ProtectedRoute>} />
-            <Route path="/auth/callback" element={<AuthPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
