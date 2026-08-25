@@ -1,57 +1,22 @@
-# Fix: Implement Permanent QR Verification
+# Swap in the Maniac Lounge logo everywhere
 
-## The error
-> Could not find the function `public.verify_pass(_pass_code)` in the schema cache
+Replace the current Khumkhwez logo with the uploaded Maniac Lounge logo across the whole app, in one place so every screen updates at once.
 
-The kitchen scanner is trying to call a database function that doesn't exist yet. Nothing in the database or backend has been built for the permanent QR flow — only the conversation plan exists. This change actually builds it.
+## What changes visually
 
-## What gets built (minimum to make scanning work)
+- Auth page, password reset page, student dashboard header, referral page, profile page, kitchen dashboard, admin dashboard, and the sidebar all show the new logo.
+- The browser tab icon (favicon) becomes the new logo.
+- Because the new logo is a wide horizontal mark (not square like the old one), the logo component switches to width-based sizing so it never looks squashed or cropped. Existing size settings on each screen are adjusted so the mark stays balanced in tight spots (sidebar, small page headers).
+- The "symbol" variant no longer has a separate square icon, so it will render the same mark, scaled smaller.
 
-### 1. Database migration
-- Add `pass_code text unique` column to `profiles`
-- Backfill: every existing student gets a generated 8-char code (no ambiguous chars: no 0/O/1/I/l)
-- Trigger on profile insert: auto-generate `pass_code` for new students
-- New RPC **`verify_pass(_pass_code text)`** — kitchen/admin only. Returns:
-  ```json
-  {
-    "found": true,
-    "user_id": "...", "name": "...", "surname": "...", "student_number": "...",
-    "paid": true, "eligible": true, "already_served_today": false,
-    "plan_name": "Weekday Lunch", "valid_until": "2026-05-25",
-    "reason": null
-  }
-  ```
-  `reason` is one of: `no_subscription`, `expired`, `plan_off_today`, `already_served`, or null when fully eligible.
-- New RPC **`serve_meal_by_pass(_pass_code text)`** — kitchen/admin only, atomic verify + insert into `meal_redemptions`. Returns same verdict shape.
-- New RPC **`admin_reissue_pass_code(_target_user uuid)`** — admin only, rotates the code.
+## What stays the same
 
-### 2. Student dashboard
-- QR encodes `pass_code` instead of `user_id`
-- Adds a status banner above the QR:
-  - Green "PAID — Valid until {date}" when subscription is active
-  - Amber "Awaiting payment" otherwise
+- Brand text on screens (for example "Khumkhwez", "Khumkhwez Now") and page titles are left as they are. Say the word if you want those renamed to Maniac Lounge and I'll update the copy, metadata, and tests too.
+- Colors, layout, and all app behaviour stay unchanged.
 
-### 3. Kitchen dashboard
-- After scan, call `verify_pass(code)` instead of doing client-side table lookups
-- Replace the result card with a full-screen verdict:
-  - 🟢 GREEN PAID + "Serve meal" button → calls `serve_meal_by_pass`
-  - 🔴 RED UNPAID + reason text
-  - 🟡 AMBER ALREADY SERVED TODAY
-- "Scan next" button to clear and reopen camera
-- Manual paste-code fallback kept
+## Technical notes
 
-### 4. Admin dashboard
-- "Reissue QR" action on each user row → calls `admin_reissue_pass_code` with confirmation
-
-## Files touched
-- New migration (column + backfill + trigger + 3 RPCs)
-- Edited: `src/components/StudentDashboard.tsx` (QR source + paid banner)
-- Edited: `src/pages/KitchenDashboard.tsx` (RPC call + verdict screen)
-- Edited: `src/pages/AdminDashboard.tsx` (reissue button)
-
-## Out of scope
-- iKhokha / payment wiring (separate task)
-- Cash → admin manual activation (already works)
-- Edge functions (not needed — RLS-protected RPCs are sufficient and simpler)
-
-After this ships you scan a QR and immediately see the verdict — no schema-cache error.
+- Upload the PNG as a CDN asset pointer (`src/assets/maniac-lounge-logo.png.asset.json`) and reference its URL in `src/components/Logo.tsx`; remove the old `khumkhwez-logo.png` / `logo-symbol.png` imports and delete the unused files.
+- `Logo.tsx`: keep the `size`/`variant` props, but map size to width with `height: auto` and `object-contain`, preserving the amber glow drop-shadow.
+- Update the asset mock in `src/test/student-dashboard.test.tsx` to the new module path so the suite still passes; run tests after the swap.
+- Favicon: write a padded square 64x64 `public/favicon.png`, point `index.html` at it, and remove `public/favicon.ico`.
