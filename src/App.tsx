@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
+import Landing from "./pages/Landing";
 import AuthPage from "./pages/AuthPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -50,6 +51,14 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// Marketing landing page for visitors, dashboard for signed-in members.
+const HomeRoute = () => {
+  const { user, loading } = useAuth();
+  if (isRecoveryHash()) return <Navigate to="/reset-password" replace />;
+  if (loading) return <div className="min-h-dvh bg-background flex items-center justify-center"><p className="text-toast">Loading...</p></div>;
+  return user ? <Index /> : <Landing />;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -61,7 +70,7 @@ const App = () => (
           <Routes>
             <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/" element={<HomeRoute />} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
             <Route path="/kitchen" element={<ProtectedRoute><KitchenDashboard /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
