@@ -61,12 +61,13 @@ describe("AuthPage", () => {
     await waitFor(() =>
       expect(mockSignInWithPassword).toHaveBeenCalledWith({ email: "a@b.com", password: "secret123" })
     );
-    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/"));
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/app"));
   });
 
   it("blocks signup when password is weak", async () => {
     renderPage();
     fireEvent.click(screen.getByRole("button", { name: "Sign up" }));
+    fireEvent.click(screen.getByLabelText(/Terms & Conditions and Privacy Policy/i));
     fireEvent.change(screen.getByPlaceholderText("Email address"), { target: { value: "new@b.com" } });
     fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "weakpass" } });
     fireEvent.change(screen.getByPlaceholderText("Confirm password"), { target: { value: "weakpass" } });
@@ -80,6 +81,7 @@ describe("AuthPage", () => {
   it("blocks signup when passwords do not match", async () => {
     renderPage();
     fireEvent.click(screen.getByRole("button", { name: "Sign up" }));
+    fireEvent.click(screen.getByLabelText(/Terms & Conditions and Privacy Policy/i));
     fireEvent.change(screen.getByPlaceholderText("Email address"), { target: { value: "new@b.com" } });
     fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "Strong1!Pass" } });
     fireEvent.change(screen.getByPlaceholderText("Confirm password"), { target: { value: "Mismatch1!" } });
@@ -94,6 +96,7 @@ describe("AuthPage", () => {
     mockSignUp.mockResolvedValue({ error: null });
     renderPage();
     fireEvent.click(screen.getByRole("button", { name: "Sign up" }));
+    fireEvent.click(screen.getByLabelText(/Terms & Conditions and Privacy Policy/i));
     fireEvent.change(screen.getByPlaceholderText("Email address"), { target: { value: "new@b.com" } });
     fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "Strong1!Pass" } });
     fireEvent.change(screen.getByPlaceholderText("Confirm password"), { target: { value: "Strong1!Pass" } });

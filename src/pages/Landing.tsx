@@ -272,7 +272,13 @@ const Landing = () => {
           </p>
           <p className="text-toast text-sm tracking-wide">maniaclounge.co.za</p>
         </div>
+        <div className="max-w-6xl mx-auto mt-6 pt-6 border-t border-border flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-toast">
+          <Link to="/terms" className="hover:text-brass transition-colors">Terms &amp; Conditions</Link>
+          <Link to="/privacy" className="hover:text-brass transition-colors">Privacy Policy</Link>
+          <span>© {new Date().getFullYear()} Maniac Lounge</span>
+        </div>
       </footer>
+
     </div>
   );
 };

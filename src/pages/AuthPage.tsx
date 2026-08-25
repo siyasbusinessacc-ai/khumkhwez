@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Logo } from "@/components/Logo";
 import { PasswordStrengthMeter } from "@/components/PasswordStrengthMeter";
@@ -14,6 +14,7 @@ const AuthPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [referralCode, setReferralCode] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -68,6 +69,15 @@ const AuthPage = () => {
       if (!password.trim()) return;
 
       if (mode === "signup") {
+        if (!acceptedTerms) {
+          toast({
+            title: "Please accept the terms",
+            description: "You must read and agree to the Terms & Conditions and Privacy Policy to create an account.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
         if (!isPasswordStrong(password)) {
           toast({
             title: "Weak password",
@@ -193,9 +203,37 @@ const AuthPage = () => {
             </div>
           )}
 
-          <button type="submit" disabled={loading} className={btnPrimary}>
+          {mode === "signup" && (
+            <label className="flex items-start gap-3 text-xs text-toast leading-relaxed cursor-pointer">
+              <input
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-primary rounded"
+                aria-label="I have read and agree to the Terms & Conditions and Privacy Policy"
+              />
+              <span>
+                I have read, understood and agree to the{" "}
+                <Link to="/terms" target="_blank" className="text-primary hover:underline">
+                  Terms &amp; Conditions
+                </Link>{" "}
+                and the{" "}
+                <Link to="/privacy" target="_blank" className="text-primary hover:underline">
+                  Privacy Policy
+                </Link>
+                .
+              </span>
+            </label>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading || (mode === "signup" && !acceptedTerms)}
+            className={btnPrimary}
+          >
             {loading ? "Please wait..." : ctaLabel}
           </button>
+
 
           {mode === "forgot" && (
             <button
@@ -219,6 +257,13 @@ const AuthPage = () => {
             </button>
           </p>
         )}
+
+        <p className="text-center text-xs text-toast">
+          <Link to="/terms" className="hover:text-primary transition-colors">Terms &amp; Conditions</Link>
+          <span className="mx-2">·</span>
+          <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+        </p>
+
       </div>
     </div>
   );

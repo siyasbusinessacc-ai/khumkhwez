@@ -89,6 +89,13 @@ const GetApp = () => {
             Open Web App
           </Link>
         </div>
+
+        <p className="text-center text-xs text-toast pt-2">
+          By continuing you agree to our{" "}
+          <Link to="/terms" className="text-brass hover:underline">Terms &amp; Conditions</Link>{" "}
+          and{" "}
+          <Link to="/privacy" className="text-brass hover:underline">Privacy Policy</Link>.
+        </p>
       </div>
     </div>
   );

@@ -14,6 +14,8 @@ import ProfilePage from "./pages/ProfilePage";
 import KitchenDashboard from "./pages/KitchenDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import ReferralPage from "./pages/ReferralPage";
+import TermsPage from "./pages/TermsPage";
+import PrivacyPage from "./pages/PrivacyPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -70,6 +72,8 @@ const App = () => (
             <Route path="/" element={<Landing />} />
             <Route path="/get-app" element={<GetApp />} />
             <Route path="/app" element={<AppRoute />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/auth" element={<Navigate to="/app" replace />} />
             <Route path="/auth/callback" element={<AppRoute />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
