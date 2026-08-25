@@ -69,6 +69,15 @@ const AuthPage = () => {
       if (!password.trim()) return;
 
       if (mode === "signup") {
+        if (!acceptedTerms) {
+          toast({
+            title: "Please accept the terms",
+            description: "You must read and agree to the Terms & Conditions and Privacy Policy to create an account.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
         if (!isPasswordStrong(password)) {
           toast({
             title: "Weak password",
