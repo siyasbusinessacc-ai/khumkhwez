@@ -38,7 +38,7 @@ vi.mock("@/contexts/AuthContext", () => ({
 vi.mock("@/assets/menu-ribeye.jpg", () => ({ default: "ribeye.jpg" }));
 vi.mock("@/assets/menu-arancini.jpg", () => ({ default: "arancini.jpg" }));
 vi.mock("@/assets/shisha-pairing.jpg", () => ({ default: "shisha.jpg" }));
-vi.mock("@/assets/khumkhwez-logo.png", () => ({ default: "logo.png" }));
+vi.mock("@/assets/maniac-lounge-logo.png", () => ({ default: "logo.png" }));
 
 const renderDash = () =>
   render(
