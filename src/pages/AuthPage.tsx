@@ -257,6 +257,13 @@ const AuthPage = () => {
             </button>
           </p>
         )}
+
+        <p className="text-center text-xs text-toast">
+          <Link to="/terms" className="hover:text-primary transition-colors">Terms &amp; Conditions</Link>
+          <span className="mx-2">·</span>
+          <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+        </p>
+
       </div>
     </div>
   );
