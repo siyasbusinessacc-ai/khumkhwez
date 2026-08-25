@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Sidebar } from "@/components/Sidebar";
 import { Logo } from "@/components/Logo";
 import type { Tables } from "@/integrations/supabase/types";
@@ -133,6 +133,12 @@ const ProfilePage = () => {
           {saving ? "Saving..." : "Save Profile"}
         </button>
       </form>
+
+      <div className="mt-8 pt-6 border-t border-border flex flex-col gap-2">
+        <p className="text-toast text-xs font-medium uppercase tracking-wider">Legal</p>
+        <Link to="/terms" className="text-sm text-brass hover:underline">Terms &amp; Conditions</Link>
+        <Link to="/privacy" className="text-sm text-brass hover:underline">Privacy Policy</Link>
+      </div>
     </div>
   );
 };

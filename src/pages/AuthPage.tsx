@@ -214,11 +214,11 @@ const AuthPage = () => {
               />
               <span>
                 I have read, understood and agree to the{" "}
-                <Link to="/terms" target="_blank" className="text-primary hover:underline">
+                <Link to="/terms" className="text-primary hover:underline">
                   Terms &amp; Conditions
                 </Link>{" "}
                 and the{" "}
-                <Link to="/privacy" target="_blank" className="text-primary hover:underline">
+                <Link to="/privacy" className="text-primary hover:underline">
                   Privacy Policy
                 </Link>
                 .
