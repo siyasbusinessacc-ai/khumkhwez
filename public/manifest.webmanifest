@@ -1,0 +1,16 @@
+{
+  "name": "Maniac Lounge",
+  "short_name": "Maniac Lounge",
+  "description": "Activate your pass, access your QR code and manage your daily meals.",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0604",
+  "theme_color": "#d97706",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

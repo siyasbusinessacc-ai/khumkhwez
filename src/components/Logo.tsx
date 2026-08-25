@@ -5,13 +5,14 @@ interface LogoProps {
   className?: string;
   size?: number;
   variant?: "full" | "symbol";
+  to?: string;
 }
 
-export const Logo = ({ className = "", size = 48, variant = "full" }: LogoProps) => {
+export const Logo = ({ className = "", size = 48, variant = "full", to = "/app" }: LogoProps) => {
   const width = variant === "symbol" ? size * 1.6 : size * 2.2;
 
   return (
-    <Link to="/" className="inline-block transition-transform active:scale-95">
+    <Link to={to} className="inline-block transition-transform active:scale-95">
       <img
         src={logoImage}
         alt="Maniac Lounge"

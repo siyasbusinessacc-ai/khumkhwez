@@ -415,7 +415,7 @@ const AdminDashboard = () => {
         <Logo size={56} />
         <h1 className="font-serif text-2xl text-foreground">Admin access only</h1>
         <p className="text-toast max-w-md">Your account doesn't have administrator permissions.</p>
-        <Button onClick={() => navigate("/")} variant="secondary">Back to dashboard</Button>
+        <Button onClick={() => navigate("/app")} variant="secondary">Back to dashboard</Button>
       </div>
     );
   }
@@ -430,7 +430,7 @@ const AdminDashboard = () => {
             <h1 className="font-serif text-xl text-foreground leading-tight">Control Panel</h1>
           </div>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/")}>Dashboard</Button>
+        <Button variant="ghost" size="sm" onClick={() => navigate("/app")}>Dashboard</Button>
       </header>
 
       <main className="px-5 mt-4 max-w-5xl mx-auto">

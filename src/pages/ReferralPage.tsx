@@ -75,7 +75,7 @@ const ReferralPage = () => {
     };
   }, [user, toast]);
 
-  const shareLink = code ? `${window.location.origin}/auth?ref=${code}` : "";
+  const shareLink = code ? `${window.location.origin}/app?ref=${code}` : "";
 
   const copy = async (text: string, label: string) => {
     try {
