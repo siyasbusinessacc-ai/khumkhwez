@@ -20,6 +20,7 @@ const makeChain = (finalValue: any) => {
 
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
+    rpc: vi.fn(() => Promise.resolve({ data: [], error: null })),
     from: vi.fn((table: string) => {
       if (table === "profiles") return makeChain(profileResult);
       if (table === "subscriptions") return makeChain({ data: [], error: null });
