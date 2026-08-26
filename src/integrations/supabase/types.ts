@@ -91,37 +91,46 @@ export type Database = {
       meal_plans: {
         Row: {
           allowed_weekdays: number[]
+          capacity: number | null
           code: string
+          count_pending: boolean
           created_at: string
           description: string | null
           duration_days: number
           id: string
           is_active: boolean
           name: string
+          planned_capacity: number | null
           price_cents: number
           updated_at: string
         }
         Insert: {
           allowed_weekdays: number[]
+          capacity?: number | null
           code: string
+          count_pending?: boolean
           created_at?: string
           description?: string | null
           duration_days?: number
           id?: string
           is_active?: boolean
           name: string
+          planned_capacity?: number | null
           price_cents: number
           updated_at?: string
         }
         Update: {
           allowed_weekdays?: number[]
+          capacity?: number | null
           code?: string
+          count_pending?: boolean
           created_at?: string
           description?: string | null
           duration_days?: number
           id?: string
           is_active?: boolean
           name?: string
+          planned_capacity?: number | null
           price_cents?: number
           updated_at?: string
         }
@@ -335,6 +344,39 @@ export type Database = {
           name?: string
           per_user_limit?: number
           starts_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_windows: {
+        Row: {
+          close_time: string
+          created_at: string
+          id: boolean
+          is_enabled: boolean
+          mode: string
+          open_days: number[]
+          open_time: string
+          updated_at: string
+        }
+        Insert: {
+          close_time?: string
+          created_at?: string
+          id?: boolean
+          is_enabled?: boolean
+          mode?: string
+          open_days?: number[]
+          open_time?: string
+          updated_at?: string
+        }
+        Update: {
+          close_time?: string
+          created_at?: string
+          id?: boolean
+          is_enabled?: boolean
+          mode?: string
+          open_days?: number[]
+          open_time?: string
           updated_at?: string
         }
         Relationships: []
@@ -714,6 +756,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      admin_promote_planned_caps: { Args: never; Returns: Json }
       admin_recent_redemptions: {
         Args: { _limit?: number }
         Returns: {
@@ -749,6 +792,29 @@ export type Database = {
         }
         Returns: Json
       }
+      admin_set_all_plan_caps: {
+        Args: { _capacity: number; _planned?: boolean }
+        Returns: Json
+      }
+      admin_set_payment_window: {
+        Args: {
+          _close_time: string
+          _is_enabled: boolean
+          _mode: string
+          _open_days: number[]
+          _open_time: string
+        }
+        Returns: Json
+      }
+      admin_set_plan_cap: {
+        Args: {
+          _capacity: number
+          _count_pending?: boolean
+          _plan_id: string
+          _planned_capacity?: number
+        }
+        Returns: Json
+      }
       apply_walkin_offer: {
         Args: {
           _code: string
@@ -765,6 +831,7 @@ export type Database = {
       book_slot: { Args: { _date: string; _slot_id: string }; Returns: Json }
       cancel_my_booking: { Args: { _date: string }; Returns: Json }
       claim_first_admin: { Args: never; Returns: Json }
+      create_pending_subscription: { Args: { _plan_id: string }; Returns: Json }
       credit_wallet: {
         Args: {
           _delta: number
@@ -829,6 +896,17 @@ export type Database = {
           slot_label: string
           start_time: string
           status: string
+        }[]
+      }
+      payment_window_status: { Args: never; Returns: Json }
+      plan_availability: {
+        Args: never
+        Returns: {
+          capacity: number
+          plan_id: string
+          remaining: number
+          sold_out: boolean
+          taken: number
         }[]
       }
       redeem_offer_code: {

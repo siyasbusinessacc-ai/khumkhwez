@@ -93,12 +93,13 @@ vi.mock("@/integrations/supabase/client", () => ({
 
 // Auth: pretend a user is signed in.
 const userId = "11111111-1111-1111-1111-111111111111";
-vi.mock("@/contexts/AuthContext", () => ({
-  useAuth: () => ({
-    user: { id: "11111111-1111-1111-1111-111111111111" },
-    signOut: vi.fn(),
-  }),
-}));
+vi.mock("@/contexts/AuthContext", () => {
+  // Stable identities — a fresh object each render would retrigger data effects forever.
+  const stableUser = { id: "11111111-1111-1111-1111-111111111111" };
+  const stableSignOut = vi.fn();
+  const stableAuth = { user: stableUser, session: null, loading: false, signOut: stableSignOut };
+  return { useAuth: () => stableAuth };
+});
 
 // Dashboard imports a few image assets — stub them.
 vi.mock("@/assets/menu-ribeye.jpg", () => ({ default: "ribeye.jpg" }));
