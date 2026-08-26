@@ -37,6 +37,7 @@ export const EmailChangeEmail = ({
     <Preview>Confirm your email change for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Text style={brand}>{siteName}</Text>
         <Heading style={h1}>Confirm your email change</Heading>
         <Text style={text}>
           You requested to change your email address for {siteName} from{' '}
@@ -68,6 +69,15 @@ export default EmailChangeEmail
 
 const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
 const container = { padding: '28px 25px', maxWidth: '560px', borderTop: '4px solid #d97706' }
+const brand = {
+  color: '#d97706',
+  fontFamily: 'Georgia, "Times New Roman", serif',
+  fontSize: '13px',
+  fontWeight: 'bold' as const,
+  letterSpacing: '0.6px',
+  margin: '0 0 12px',
+  textTransform: 'uppercase' as const,
+}
 const h1 = {
   fontSize: '22px',
   fontWeight: 'bold' as const,

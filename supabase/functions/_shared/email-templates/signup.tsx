@@ -32,6 +32,7 @@ export const SignupEmail = ({
     <Preview>Confirm your email for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Text style={brand}>{siteName}</Text>
         <Heading style={h1}>Confirm your email</Heading>
         <Text style={text}>
           Thanks for signing up for{' '}
@@ -62,6 +63,15 @@ export default SignupEmail
 
 const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
 const container = { padding: '28px 25px', maxWidth: '560px', borderTop: '4px solid #d97706' }
+const brand = {
+  color: '#d97706',
+  fontFamily: 'Georgia, "Times New Roman", serif',
+  fontSize: '13px',
+  fontWeight: 'bold' as const,
+  letterSpacing: '0.6px',
+  margin: '0 0 12px',
+  textTransform: 'uppercase' as const,
+}
 const h1 = {
   fontSize: '22px',
   fontWeight: 'bold' as const,
