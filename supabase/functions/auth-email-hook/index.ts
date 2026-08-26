@@ -15,7 +15,7 @@ const corsHeaders = {
 }
 
 // Configuration
-const SITE_NAME = "maniac lounge"
+const SITE_NAME = "Maniac Lounge"
 const SENDER_DOMAIN = "notify.maniaclounge.co.za"
 const ROOT_DOMAIN = "maniaclounge.co.za"
 const FROM_DOMAIN = "notify.maniaclounge.co.za"
@@ -122,8 +122,14 @@ async function handlePreview(req: Request): Promise<Response> {
 
 // The SDK handler owns verification, dispatch, and retry semantics; this file
 // owns only the email decisions: subjects, templates, and per-type props.
+const apiKey = Deno.env.get('LOVABLE_API_KEY')
+
+if (!apiKey) {
+  throw new Error('LOVABLE_API_KEY is not configured')
+}
+
 const handler = createAuthEmailHandler({
-  apiKey: Deno.env.get('LOVABLE_API_KEY')!,
+  apiKey,
   from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
   senderDomain: SENDER_DOMAIN,
   sendUrl: Deno.env.get('LOVABLE_SEND_URL'),

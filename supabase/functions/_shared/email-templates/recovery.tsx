@@ -27,6 +27,7 @@ export const RecoveryEmail = ({
     <Preview>Reset your password for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Text style={brand}>{siteName}</Text>
         <Heading style={h1}>Reset your password</Heading>
         <Text style={text}>
           We received a request to reset your password for {siteName}. Click
@@ -47,11 +48,21 @@ export const RecoveryEmail = ({
 export default RecoveryEmail
 
 const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
+const container = { padding: '28px 25px', maxWidth: '560px', borderTop: '4px solid #d97706' }
+const brand = {
+  color: '#d97706',
+  fontFamily: 'Georgia, "Times New Roman", serif',
+  fontSize: '13px',
+  fontWeight: 'bold' as const,
+  letterSpacing: '0.6px',
+  margin: '0 0 12px',
+  textTransform: 'uppercase' as const,
+}
 const h1 = {
   fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: '#000000',
+  color: '#3b1d0f',
+  fontFamily: 'Georgia, "Times New Roman", serif',
   margin: '0 0 20px',
 }
 const text = {
@@ -61,7 +72,8 @@ const text = {
   margin: '0 0 25px',
 }
 const button = {
-  backgroundColor: '#000000',
+  backgroundColor: '#d97706',
+  fontWeight: 'bold' as const,
   color: '#ffffff',
   fontSize: '14px',
   borderRadius: '8px',

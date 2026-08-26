@@ -13,15 +13,17 @@ import {
 } from 'npm:@react-email/components@0.0.22'
 
 interface ReauthenticationEmailProps {
+  siteName?: string
   token: string
 }
 
-export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => (
+export const ReauthenticationEmail = ({ siteName = 'Maniac Lounge', token }: ReauthenticationEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
     <Preview>Your verification code</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Text style={brand}>{siteName}</Text>
         <Heading style={h1}>Confirm reauthentication</Heading>
         <Text style={text}>Use the code below to confirm your identity:</Text>
         <Text style={codeStyle}>{token}</Text>
@@ -37,11 +39,21 @@ export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => 
 export default ReauthenticationEmail
 
 const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
+const container = { padding: '28px 25px', maxWidth: '560px', borderTop: '4px solid #d97706' }
+const brand = {
+  color: '#d97706',
+  fontFamily: 'Georgia, "Times New Roman", serif',
+  fontSize: '13px',
+  fontWeight: 'bold' as const,
+  letterSpacing: '0.6px',
+  margin: '0 0 12px',
+  textTransform: 'uppercase' as const,
+}
 const h1 = {
   fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: '#000000',
+  color: '#3b1d0f',
+  fontFamily: 'Georgia, "Times New Roman", serif',
   margin: '0 0 20px',
 }
 const text = {
@@ -54,7 +66,7 @@ const codeStyle = {
   fontFamily: 'Courier, monospace',
   fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: '#000000',
+  color: '#3b1d0f',
   margin: '0 0 30px',
 }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
