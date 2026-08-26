@@ -31,7 +31,7 @@ const STEPS = [
   {
     n: "02",
     title: "Choose your style",
-    body: "Fetch it hot from the partner kitchen down the road, or get it delivered straight to your door or res.",
+    body: "Fetch it hot from 34 Beit Street, New Doornfontein, Johannesburg, or get it delivered straight to your door or res.",
   },
   {
     n: "03",
@@ -264,12 +264,15 @@ const Landing = () => {
       <footer className="px-5 py-10 border-t border-border">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-5">
           <Logo size={40} to="/" />
-          <p className="text-toast text-sm">
-            Already a member?{" "}
-            <Link to="/app" className="text-brass font-semibold hover:underline">
-              Open Web App
-            </Link>
-          </p>
+          <div className="text-center sm:text-right">
+            <p className="text-toast text-sm">
+              Already a member?{" "}
+              <Link to="/app" className="text-brass font-semibold hover:underline">
+                Open Web App
+              </Link>
+            </p>
+            <p className="text-toast/80 text-xs mt-1">34 Beit Street, New Doornfontein, Johannesburg</p>
+          </div>
           <p className="text-toast text-sm tracking-wide">maniaclounge.co.za</p>
         </div>
         <div className="max-w-6xl mx-auto mt-6 pt-6 border-t border-border flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-toast">
