@@ -5,7 +5,8 @@ import ProfilePage from "@/pages/ProfilePage";
 
 const mockNavigate = vi.fn();
 const mockToast = vi.fn();
-const mockSignOut = vi.fn().mockResolvedValue(undefined);
+const { hoistedSignOut } = vi.hoisted(() => ({ hoistedSignOut: vi.fn().mockResolvedValue(undefined) }));
+const mockSignOut = hoistedSignOut;
 
 const fakeProfile = {
   id: "p1",
@@ -28,10 +29,13 @@ let updateResult: { error: any } = { error: null };
 
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
+    rpc: vi.fn(() => Promise.resolve({ data: [], error: null })),
     from: vi.fn(() => ({
       select: () => ({
         eq: () => ({
           maybeSingle: () => Promise.resolve(fetchResult),
+          // useUserRoles awaits the eq() builder directly.
+          then: (cb: any) => Promise.resolve({ data: [], error: null }).then(cb),
         }),
       }),
       update: () => ({
@@ -41,9 +45,11 @@ vi.mock("@/integrations/supabase/client", () => ({
   },
 }));
 
-vi.mock("@/contexts/AuthContext", () => ({
-  useAuth: () => ({ user: { id: "u1" }, signOut: mockSignOut }),
-}));
+vi.mock("@/contexts/AuthContext", () => {
+  // Stable identity — a new user object per render would loop data effects.
+  const stableAuth = { user: { id: "u1" }, session: null, loading: false, signOut: hoistedSignOut };
+  return { useAuth: () => stableAuth };
+});
 
 vi.mock("react-router-dom", async () => {
   const actual: any = await vi.importActual("react-router-dom");
@@ -99,12 +105,12 @@ describe("ProfilePage", () => {
     );
   });
 
-  it("Sign Out button calls signOut and navigates to /auth", async () => {
+  it("Sign Out button calls signOut and navigates to /app", async () => {
     renderPage();
     await waitFor(() => screen.getByPlaceholderText("First name"));
     fireEvent.click(screen.getByRole("button", { name: /Sign Out/i }));
     await waitFor(() => expect(mockSignOut).toHaveBeenCalled());
-    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/auth"));
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/app"));
   });
 
   it("handles missing profile gracefully", async () => {

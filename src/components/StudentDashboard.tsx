@@ -10,6 +10,13 @@ import { BroadcastInbox } from "@/components/BroadcastInbox";
 import { Sidebar } from "@/components/Sidebar";
 import { SlotBookingCard } from "@/components/SlotBookingCard";
 import { WeeklyMenuView } from "@/components/WeeklyMenuView";
+import { Lock } from "lucide-react";
+import {
+  usePaymentAccess,
+  msUntil,
+  formatCountdown,
+  formatLocalDateTime,
+} from "@/hooks/usePaymentAccess";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Profile = Tables<"profiles">;
@@ -215,21 +222,37 @@ const PlanSelector = ({
 }) => {
   const { toast } = useToast();
   const [busy, setBusy] = useState<string | null>(null);
+  const { status, availabilityFor, reload, nowLocal } = usePaymentAccess();
+
+  const windowOpen = status?.is_open !== false;
+  const opensIn = msUntil(status?.opens_at ?? null, nowLocal);
+  const closesIn = msUntil(status?.closes_at ?? null, nowLocal);
 
   const choosePlan = async (plan: MealPlan) => {
     setBusy(plan.id);
     try {
-      const { error } = await supabase.from("subscriptions").insert({
-        user_id: userId,
-        plan_id: plan.id,
-        amount_cents: plan.price_cents,
-        status: "pending",
-      });
+      const { data, error } = await supabase.rpc("create_pending_subscription", { _plan_id: plan.id });
       if (error) throw error;
+      const r = data as { ok: boolean; reason?: string };
+      if (!r?.ok) {
+        const map: Record<string, string> = {
+          window_closed: "Payments are currently closed. Come back when the window opens.",
+          plan_full: "This package is full. Try another package.",
+          already_subscribed: "You already have a plan reserved or active.",
+          invalid_plan: "That plan is unavailable.",
+        };
+        reload();
+        return toast({
+          title: "Could not reserve plan",
+          description: map[r?.reason ?? ""] ?? r?.reason,
+          variant: "destructive",
+        });
+      }
       toast({
         title: "Plan reserved",
         description: "Pay at the counter or wait for online payment to be enabled. Admin can activate manually.",
       });
+      reload();
       onCreated();
     } catch (e: any) {
       toast({ title: "Could not reserve plan", description: e.message, variant: "destructive" });
@@ -244,25 +267,56 @@ const PlanSelector = ({
         <h2 className="font-serif text-2xl text-foreground">Choose Your Plan</h2>
         <p className="text-toast text-sm mt-1">All plans run for 30 days from activation.</p>
       </div>
+
+      {status && !windowOpen && (
+        <div className="bg-card ring-1 ring-border rounded-2xl p-4 flex items-start gap-3">
+          <Lock size={18} className="text-brass mt-0.5 shrink-0" />
+          <div>
+            <p className="text-foreground font-medium">Payments are closed right now</p>
+            <p className="text-toast text-sm mt-0.5">
+              {status.opens_at
+                ? `Opens ${formatLocalDateTime(status.opens_at)} · in ${formatCountdown(opensIn ?? 0)}`
+                : "Purchases are paused. Check back soon."}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {status && windowOpen && status.closes_at && (
+        <div className="bg-primary/10 ring-1 ring-primary/30 rounded-2xl p-3">
+          <p className="text-brass text-sm">
+            Payments are open — closes in {formatCountdown(closesIn ?? 0)} ({formatLocalDateTime(status.closes_at)})
+          </p>
+        </div>
+      )}
+
       <div className="grid gap-3">
         {plans
           .filter((p) => p.is_active)
           .map((plan) => {
             const isBest = plan.code === "full_week";
+            const avail = availabilityFor(plan.id);
+            const soldOut = avail?.sold_out ?? false;
+            const locked = !windowOpen || soldOut;
             return (
               <div
                 key={plan.id}
-                className={`bg-card rounded-2xl p-5 ring-1 ${
+                className={`bg-card rounded-2xl p-5 ring-1 transition-opacity ${
                   isBest ? "ring-primary/40 shadow-[0_0_40px_-15px_hsl(var(--amber-glow)/0.3)]" : "ring-border"
-                }`}
+                } ${locked ? "opacity-60" : ""}`}
               >
                 <div className="flex justify-between items-start gap-3 mb-3">
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <h3 className="font-serif text-xl text-foreground">{plan.name}</h3>
                       {isBest && (
                         <span className="text-[10px] uppercase tracking-wider text-brass bg-secondary px-2 py-0.5 rounded-full ring-1 ring-primary/40">
                           Best Value
+                        </span>
+                      )}
+                      {soldOut && (
+                        <span className="text-[10px] uppercase tracking-wider text-destructive bg-secondary px-2 py-0.5 rounded-full ring-1 ring-destructive/40">
+                          Full
                         </span>
                       )}
                     </div>
@@ -275,6 +329,13 @@ const PlanSelector = ({
                     <p className="text-toast text-xs">/ {plan.duration_days} days</p>
                   </div>
                 </div>
+
+                {avail?.capacity != null && (
+                  <p className="text-toast text-xs mb-3 tabular-nums">
+                    {soldOut ? "No spots left" : `${avail.remaining} of ${avail.capacity} spots left`}
+                  </p>
+                )}
+
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {WEEKDAY_LABELS.map((d, i) => {
                     const on = plan.allowed_weekdays.includes(i + 1);
@@ -294,10 +355,17 @@ const PlanSelector = ({
                 </div>
                 <button
                   onClick={() => choosePlan(plan)}
-                  disabled={busy !== null}
-                  className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
+                  disabled={busy !== null || locked}
+                  className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  {busy === plan.id ? "Reserving…" : "Choose this plan"}
+                  {locked && <Lock size={15} />}
+                  {soldOut
+                    ? "Package full"
+                    : !windowOpen
+                      ? `Opens in ${formatCountdown(opensIn ?? 0)}`
+                      : busy === plan.id
+                        ? "Reserving…"
+                        : "Choose this plan"}
                 </button>
               </div>
             );
@@ -309,6 +377,7 @@ const PlanSelector = ({
     </div>
   );
 };
+
 
 // MenuPreview replaced by WeeklyMenuView (admin-managed weekly menu)
 

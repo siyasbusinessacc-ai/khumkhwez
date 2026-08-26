@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { OffersTab } from "@/components/admin/OffersTab";
 import { BroadcastsTab } from "@/components/admin/BroadcastsTab";
 import { SlotsTab } from "@/components/admin/SlotsTab";
+import { AccessTab } from "@/components/admin/AccessTab";
 import { AnalyticsTab } from "@/components/admin/AnalyticsTab";
 import { MenusTab } from "@/components/admin/MenusTab";
 
@@ -441,6 +442,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="menus" className="rounded-lg">Menus</TabsTrigger>
             <TabsTrigger value="offers" className="rounded-lg">Offers</TabsTrigger>
             <TabsTrigger value="slots" className="rounded-lg">Slots</TabsTrigger>
+            <TabsTrigger value="access" className="rounded-lg">Payments & Caps</TabsTrigger>
             <TabsTrigger value="broadcasts" className="rounded-lg">Messages</TabsTrigger>
             <TabsTrigger value="analytics" className="rounded-lg">Analytics</TabsTrigger>
             <TabsTrigger value="history" className="rounded-lg">History</TabsTrigger>
@@ -452,6 +454,7 @@ const AdminDashboard = () => {
           <TabsContent value="menus"><MenusTab /></TabsContent>
           <TabsContent value="offers"><OffersTab plans={plans} /></TabsContent>
           <TabsContent value="slots"><SlotsTab /></TabsContent>
+          <TabsContent value="access"><AccessTab /></TabsContent>
           <TabsContent value="broadcasts"><BroadcastsTab /></TabsContent>
           <TabsContent value="analytics"><AnalyticsTab /></TabsContent>
 
