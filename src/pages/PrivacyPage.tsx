@@ -239,6 +239,7 @@ const PrivacyPage = () => {
           paragraphs: [
             "If you have questions about this Privacy Policy or wish to exercise an applicable privacy right, contact Maniac Lounge using the contact details published on our website.",
             "Maniac Lounge — Website: maniaclounge.co.za",
+            "Physical address: 34 Beit Street, New Doornfontein, Johannesburg",
             "By registering for, accessing or using the Maniac Lounge application or services, you acknowledge that you have had an opportunity to read this Privacy Policy and understand how your personal information may be processed for the purposes described above.",
           ],
         },

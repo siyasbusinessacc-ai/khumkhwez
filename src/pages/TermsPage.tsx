@@ -232,6 +232,7 @@ const TermsPage = () => {
           paragraphs: [
             "For questions regarding meal plans, payments, cancellations, refunds or these Terms, customers can contact Maniac Lounge through the contact details published on the website.",
             "Maniac Lounge — Website: maniaclounge.co.za",
+            "Physical address: 34 Beit Street, New Doornfontein, Johannesburg",
             "By purchasing a Maniac Lounge meal plan or using the Maniac Lounge service, you acknowledge that you have had an opportunity to read and understand these Terms & Conditions.",
           ],
         },

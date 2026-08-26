@@ -54,6 +54,9 @@ const GetApp = () => {
             Get the Maniac Lounge app to activate your pass, access your QR code, and manage your
             meals.
           </p>
+          <p className="text-toast/80 text-xs">
+            Pickup location: 34 Beit Street, New Doornfontein, Johannesburg
+          </p>
         </div>
 
         {installed ? (
