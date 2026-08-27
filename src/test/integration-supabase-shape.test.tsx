@@ -209,11 +209,11 @@ describe("Integration: real Supabase query shape — ProfilePage update", () => 
 
     const nameInput = await screen.findByPlaceholderText("First name");
     const surnameInput = screen.getByPlaceholderText("Last name");
-    const studentInput = screen.getByPlaceholderText("e.g. 202301234");
+    const phoneInput = screen.getByPlaceholderText("+27 81 234 5678");
 
     fireEvent.change(nameInput, { target: { value: "Lerato" } });
     fireEvent.change(surnameInput, { target: { value: "Dube" } });
-    fireEvent.change(studentInput, { target: { value: "202309999" } });
+    fireEvent.change(phoneInput, { target: { value: "+27 81 000 0000" } });
 
     setNextResponse({ status: 204, body: "" });
 
@@ -238,7 +238,7 @@ describe("Integration: real Supabase query shape — ProfilePage update", () => 
     expect(patchReq.body).toMatchObject({
       name: "Lerato",
       surname: "Dube",
-      student_number: "202309999",
+      primary_phone: "+27 81 000 0000",
     });
     expect(patchReq.headers["apikey"]).toBe(FAKE_KEY);
     expect(patchReq.headers["content-type"]).toMatch(/application\/json/);
