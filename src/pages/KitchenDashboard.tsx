@@ -466,10 +466,69 @@ const KitchenDashboard = () => {
             >
               {busy ? "Recording…" : "Serve meal"}
             </button>
+
+            {lookup.user_id && (
+              <button
+                onClick={() => setDetailUserId(lookup.user_id)}
+                className="w-full mt-3 bg-secondary ring-1 ring-border py-3 rounded-xl text-foreground hover:ring-primary/40 text-sm"
+              >
+                View full profile
+              </button>
+            )}
           </section>
         )}
 
+        <section className="bg-card rounded-3xl p-6 ring-1 ring-border">
+          <h2 className="font-serif text-lg text-foreground mb-3">Find a student</h2>
+          <p className="text-toast text-sm mb-4">
+            Look up any student by name or email to see their details, photo and package.
+          </p>
+          <div className="flex gap-2">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && runSearch()}
+              placeholder="Name, surname or email"
+              className="flex-1 bg-input text-foreground rounded-xl px-4 py-3 ring-1 ring-border focus:ring-primary outline-none text-sm"
+            />
+            <button
+              onClick={runSearch}
+              disabled={!search.trim() || searching}
+              className="px-5 py-3 rounded-xl bg-secondary ring-1 ring-border text-foreground hover:ring-primary/40 disabled:opacity-50"
+            >
+              {searching ? "…" : "Search"}
+            </button>
+          </div>
+
+          <div className="mt-4 space-y-2">
+            {results.map((r) => (
+              <button
+                key={r.user_id}
+                onClick={() => setDetailUserId(r.user_id)}
+                className="w-full text-left bg-secondary/40 ring-1 ring-border rounded-xl px-4 py-3 hover:ring-primary/40"
+              >
+                <p className="text-foreground text-sm">
+                  {r.name ?? "—"} {r.surname ?? ""}
+                </p>
+                <p className="text-toast text-xs truncate">{r.email}</p>
+              </button>
+            ))}
+            {!searching && search.trim() && results.length === 0 && (
+              <p className="text-toast text-sm text-center py-4">No students found.</p>
+            )}
+          </div>
+        </section>
+
+        {detailUserId && (
+          <UserDetailDialog
+            userId={detailUserId}
+            open={!!detailUserId}
+            onOpenChange={(v) => !v && setDetailUserId(null)}
+          />
+        )}
+
         <WalkInOfferCard />
+
       </main>
     </div>
   );
