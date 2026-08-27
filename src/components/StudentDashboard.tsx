@@ -6,7 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUserRoles } from "@/hooks/useUserRoles";
 import { useToast } from "@/hooks/use-toast";
 import { Logo } from "@/components/Logo";
-import { BroadcastInbox } from "@/components/BroadcastInbox";
 import { Sidebar } from "@/components/Sidebar";
 import { SlotBookingCard } from "@/components/SlotBookingCard";
 import { WeeklyMenuView } from "@/components/WeeklyMenuView";
@@ -538,7 +537,6 @@ const StudentDashboard = () => {
     <div className="min-h-dvh bg-background pb-12">
       <Sidebar />
       <header className="px-5 pt-8 pb-4 relative flex flex-col items-center gap-4">
-        <div className="absolute right-4 top-6"><BroadcastInbox /></div>
         <Logo size={120} />
         <div className="text-center">
           <p className="text-toast text-sm font-medium tracking-wide uppercase mb-1">
