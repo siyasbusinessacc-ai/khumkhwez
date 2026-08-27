@@ -178,7 +178,7 @@ describe("Integration: real Supabase query shape — ProfilePage fetch (.maybeSi
     await waitFor(() => {
       expect(screen.getByDisplayValue("Thabo")).toBeInTheDocument();
       expect(screen.getByDisplayValue("Mokoena")).toBeInTheDocument();
-      expect(screen.getByDisplayValue("202301234")).toBeInTheDocument();
+      expect(screen.getByDisplayValue("+27 81 234 5678")).toBeInTheDocument();
     });
   });
 });
