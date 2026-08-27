@@ -169,7 +169,7 @@ const PendingPassCard = ({ pending, onApplied }: { pending: PendingSub; onApplie
   };
 
   const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hi! I've completed the EFT payment for my Maniac Lounge access. My registered email is ${user?.email ?? ""}. Attached is my proof of payment.`,
+    `Hi! I've completed the EFT payment for my Maniac Lounge ${pending.planName} plan (R${(pending.amount_cents / 100).toFixed(2)}). Attached is my proof of payment.`,
   )}`;
 
   const applyOffer = async () => {
