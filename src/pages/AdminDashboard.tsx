@@ -19,6 +19,8 @@ import { AccessTab } from "@/components/admin/AccessTab";
 import { AnalyticsTab } from "@/components/admin/AnalyticsTab";
 import { MenusTab } from "@/components/admin/MenusTab";
 import { PendingPaymentsTab } from "@/components/admin/PendingPaymentsTab";
+import { UserDetailDialog } from "@/components/admin/UserDetailDialog";
+
 
 type Stats = {
   meals_today: number;
