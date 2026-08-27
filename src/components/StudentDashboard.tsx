@@ -10,7 +10,7 @@ import { BroadcastInbox } from "@/components/BroadcastInbox";
 import { Sidebar } from "@/components/Sidebar";
 import { SlotBookingCard } from "@/components/SlotBookingCard";
 import { WeeklyMenuView } from "@/components/WeeklyMenuView";
-import { Lock } from "lucide-react";
+import { Lock, Copy, MessageCircle } from "lucide-react";
 import {
   usePaymentAccess,
   msUntil,
