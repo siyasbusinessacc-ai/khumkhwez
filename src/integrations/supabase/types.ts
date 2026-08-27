@@ -842,6 +842,7 @@ export type Database = {
         }
         Returns: number
       }
+      expire_due_subscriptions: { Args: never; Returns: number }
       generate_qr_pass_code: { Args: never; Returns: string }
       get_my_wallet_summary: { Args: never; Returns: Json }
       get_or_create_referral_code: { Args: never; Returns: string }
