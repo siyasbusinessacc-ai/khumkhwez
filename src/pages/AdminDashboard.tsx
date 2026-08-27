@@ -200,7 +200,12 @@ const UsersTab = ({ plans, refreshStats }: { plans: MealPlan[]; refreshStats: ()
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
+              <UserDetailDialog
+                userId={u.user_id}
+                trigger={<Button size="sm" variant="secondary">View full profile</Button>}
+              />
               <ActivateSubscriptionDialog
+
                 user={u}
                 plans={plans}
                 onDone={() => {
