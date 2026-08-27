@@ -33,6 +33,11 @@ const KitchenDashboard = () => {
   const [scanning, setScanning] = useState(false);
   const [manualPass, setManualPass] = useState("");
   const [lookup, setLookup] = useState<VerifyResult | null>(null);
+  const [search, setSearch] = useState("");
+  const [results, setResults] = useState<{ user_id: string; name: string | null; surname: string | null; email: string | null }[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [detailUserId, setDetailUserId] = useState<string | null>(null);
+
   const [busy, setBusy] = useState(false);
   const [slots, setSlots] = useState<{ id: string; label: string; capacity: number }[]>([]);
   const [slotId, setSlotId] = useState<string>("");
