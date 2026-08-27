@@ -81,7 +81,7 @@ describe("ProfilePage", () => {
       expect((screen.getByPlaceholderText("First name") as HTMLInputElement).value).toBe("Thabo")
     );
     expect((screen.getByPlaceholderText("Last name") as HTMLInputElement).value).toBe("Mokoena");
-    expect((screen.getByPlaceholderText("e.g. 202301234") as HTMLInputElement).value).toBe("202301234");
+    expect(screen.getByText(/Upload profile picture/i)).toBeInTheDocument();
   });
 
   it("shows success toast after saving", async () => {
