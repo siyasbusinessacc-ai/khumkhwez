@@ -943,6 +943,10 @@ export type Database = {
       }
       redeem_referral_code: { Args: { _code: string }; Returns: Json }
       referral_reward_for_count: { Args: { _count: number }; Returns: number }
+      release_pending_subscription: {
+        Args: { _subscription_id: string }
+        Returns: Json
+      }
       serve_meal_by_pass: {
         Args: { _kitchen_user_id?: string; _pass_code: string }
         Returns: Json
