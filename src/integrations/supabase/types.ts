@@ -756,6 +756,24 @@ export type Database = {
           user_id: string
         }[]
       }
+      admin_pending_payments: {
+        Args: { _limit?: number }
+        Returns: {
+          amount_cents: number
+          created_at: string
+          email: string
+          name: string
+          offer_codes: string[]
+          offer_discount_cents: number
+          plan_name: string
+          plan_price_cents: number
+          student_number: string
+          subscription_id: string
+          surname: string
+          user_id: string
+          wallet_discount_cents: number
+        }[]
+      }
       admin_promote_planned_caps: { Args: never; Returns: Json }
       admin_recent_redemptions: {
         Args: { _limit?: number }
