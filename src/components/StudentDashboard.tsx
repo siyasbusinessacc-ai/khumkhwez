@@ -148,10 +148,29 @@ const ActivePassCard = ({
 // =====================================================
 type PendingSub = { id: string; planName: string; amount_cents: number };
 
+const BANK_NAME = "FNB";
+const ACCOUNT_NUMBER = "63183622951";
+const WHATSAPP_NUMBER = "27845734958";
+
 const PendingPassCard = ({ pending, onApplied }: { pending: PendingSub; onApplied: () => void }) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
+  const [proofSent, setProofSent] = useState(false);
+
+  const copyAccount = async () => {
+    try {
+      await navigator.clipboard.writeText(ACCOUNT_NUMBER);
+      toast({ title: "Account number copied" });
+    } catch {
+      toast({ title: "Copy failed", description: ACCOUNT_NUMBER, variant: "destructive" });
+    }
+  };
+
+  const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    `Hi! I've completed the EFT payment for my Maniac Lounge access. My registered email is ${user?.email ?? ""}. Attached is my proof of payment.`,
+  )}`;
 
   const applyOffer = async () => {
     if (!code.trim()) return;
@@ -179,13 +198,65 @@ const PendingPassCard = ({ pending, onApplied }: { pending: PendingSub; onApplie
   return (
     <div className="bg-card rounded-3xl p-6 sm:p-8 ring-1 ring-border">
       <div className="text-center">
-        <p className="text-toast text-xs font-medium uppercase tracking-wide mb-2">Awaiting Activation</p>
+        <p className="text-toast text-xs font-medium uppercase tracking-wide mb-2">Awaiting Payment</p>
         <h2 className="font-serif text-2xl text-foreground">{pending.planName}</h2>
         <p className="font-serif text-3xl text-brass mt-2">R{(pending.amount_cents / 100).toFixed(2)}</p>
         <p className="text-toast text-sm mt-3 max-w-md mx-auto">
-          Pay at the counter or wait for online payment. Your pass activates automatically on confirmation.
+          Pay by manual EFT bank transfer using the details below.
         </p>
       </div>
+
+      {/* Bank details */}
+      <div className="mt-5 bg-background rounded-2xl ring-1 ring-border p-4 space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-toast text-sm">Bank</span>
+          <span className="text-foreground font-medium">{BANK_NAME}</span>
+        </div>
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-toast text-sm">Account Number</span>
+          <div className="flex items-center gap-2">
+            <span className="text-foreground font-mono tabular-nums">{ACCOUNT_NUMBER}</span>
+            <button
+              onClick={copyAccount}
+              aria-label="Copy Account Number"
+              className="px-3 py-1.5 rounded-lg bg-secondary ring-1 ring-border text-foreground hover:ring-primary/40 text-xs flex items-center gap-1.5"
+            >
+              <Copy size={13} /> Copy
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Reference mandate */}
+      <div className="mt-4 rounded-2xl p-4 bg-destructive/15 ring-1 ring-destructive/40">
+        <p className="text-foreground font-bold text-sm leading-relaxed">
+          IMPORTANT: You MUST use your Email Address as the payment reference so we can activate your account.
+        </p>
+        {user?.email && (
+          <p className="text-toast text-xs mt-2 font-mono break-all">Your reference: {user.email}</p>
+        )}
+      </div>
+
+      {/* WhatsApp proof */}
+      {proofSent ? (
+        <div className="mt-4 rounded-2xl p-4 bg-primary/10 ring-1 ring-primary/30 text-center">
+          <p className="text-brass font-medium">Proof sent — verification pending</p>
+          <p className="text-toast text-sm mt-1">
+            Your membership access is pending quick manual verification. We'll activate your pass shortly after we confirm the payment.
+          </p>
+        </div>
+      ) : (
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => setProofSent(true)}
+          className="mt-4 w-full py-3.5 rounded-xl bg-[#25D366] text-[#04220f] font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+        >
+          <MessageCircle size={18} /> I've Paid — Send Proof on WhatsApp
+        </a>
+      )}
+
       <div className="mt-5 pt-5 border-t border-border space-y-3">
         <div className="flex gap-2">
           <input
@@ -207,6 +278,7 @@ const PendingPassCard = ({ pending, onApplied }: { pending: PendingSub; onApplie
     </div>
   );
 };
+
 
 // =====================================================
 // Plan selector — payment-ready stub
