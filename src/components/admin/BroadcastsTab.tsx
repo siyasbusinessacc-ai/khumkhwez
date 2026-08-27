@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Trash2 } from "lucide-react";
+import { Trash2, Pin, PinOff, Clock } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 
 type Broadcast = {
   id: string;
@@ -16,7 +17,17 @@ type Broadcast = {
   target: "all" | "tier";
   target_tier: string | null;
   created_at: string;
+  expires_at: string | null;
+  is_pinned: boolean;
 };
+
+const DURATIONS = [
+  { value: "24", label: "24 hours" },
+  { value: "72", label: "3 days" },
+  { value: "168", label: "1 week" },
+  { value: "720", label: "1 month" },
+  { value: "permanent", label: "Never expires" },
+] as const;
 
 const TIERS = ["bronze", "silver", "gold", "elite"] as const;
 
@@ -25,7 +36,14 @@ export const BroadcastsTab = () => {
   const [items, setItems] = useState<Broadcast[]>([]);
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [form, setForm] = useState({ title: "", body: "", target: "all" as "all" | "tier", target_tier: "bronze" });
+  const [form, setForm] = useState({
+    title: "",
+    body: "",
+    target: "all" as "all" | "tier",
+    target_tier: "bronze",
+    duration: "168" as string,
+    is_pinned: false,
+  });
 
   const load = async () => {
     const { data, error } = await supabase.from("broadcasts").select("*").order("created_at", { ascending: false });
@@ -42,12 +60,42 @@ export const BroadcastsTab = () => {
       body: form.body.trim(),
       target: form.target,
       target_tier: form.target === "tier" ? (form.target_tier as "bronze" | "silver" | "gold" | "elite") : null,
+      expires_at:
+        form.duration === "permanent"
+          ? null
+          : new Date(Date.now() + Number(form.duration) * 3_600_000).toISOString(),
+      is_pinned: form.is_pinned,
     }]);
     setBusy(false);
     if (error) return toast({ title: "Send failed", description: error.message, variant: "destructive" });
     toast({ title: "Broadcast sent" });
     setOpen(false);
-    setForm({ title: "", body: "", target: "all", target_tier: "bronze" });
+    setForm({ title: "", body: "", target: "all", target_tier: "bronze", duration: "168", is_pinned: false });
+    load();
+  };
+
+  const togglePin = async (b: Broadcast) => {
+    const { error } = await supabase.from("broadcasts").update({ is_pinned: !b.is_pinned }).eq("id", b.id);
+    if (error) return toast({ title: "Update failed", description: error.message, variant: "destructive" });
+    load();
+  };
+
+  const expireNow = async (b: Broadcast) => {
+    const { error } = await supabase
+      .from("broadcasts")
+      .update({ expires_at: new Date().toISOString() })
+      .eq("id", b.id);
+    if (error) return toast({ title: "Update failed", description: error.message, variant: "destructive" });
+    toast({ title: "Announcement hidden from students" });
+    load();
+  };
+
+  const extend = async (b: Broadcast, hours: number | null) => {
+    const { error } = await supabase
+      .from("broadcasts")
+      .update({ expires_at: hours === null ? null : new Date(Date.now() + hours * 3_600_000).toISOString() })
+      .eq("id", b.id);
+    if (error) return toast({ title: "Update failed", description: error.message, variant: "destructive" });
     load();
   };
 
@@ -92,6 +140,21 @@ export const BroadcastsTab = () => {
                   </div>
                 )}
               </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>How long it shows</Label>
+                  <Select value={form.duration} onValueChange={(v) => setForm({ ...form, duration: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {DURATIONS.map(d => <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-end gap-2 pb-1">
+                  <Switch checked={form.is_pinned} onCheckedChange={(v) => setForm({ ...form, is_pinned: v })} />
+                  <span className="text-sm text-toast">Pin to top</span>
+                </div>
+              </div>
             </div>
             <DialogFooter>
               <Button variant="secondary" onClick={() => setOpen(false)}>Cancel</Button>
@@ -111,6 +174,27 @@ export const BroadcastsTab = () => {
                 <p className="text-toast text-xs mt-2">
                   {b.target === "all" ? "All students" : `Tier: ${b.target_tier}`} · {new Date(b.created_at).toLocaleString()}
                 </p>
+                <p className="text-xs mt-1">
+                  {b.expires_at == null ? (
+                    <span className="text-brass">Never expires</span>
+                  ) : new Date(b.expires_at) <= new Date() ? (
+                    <span className="text-destructive">Expired — hidden from students</span>
+                  ) : (
+                    <span className="text-toast">Shows until {new Date(b.expires_at).toLocaleString()}</span>
+                  )}
+                  {b.is_pinned && <span className="text-brass"> · Pinned</span>}
+                </p>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  <Button size="sm" variant="secondary" onClick={() => togglePin(b)}>
+                    {b.is_pinned ? <PinOff size={14} className="mr-1" /> : <Pin size={14} className="mr-1" />}
+                    {b.is_pinned ? "Unpin" : "Pin"}
+                  </Button>
+                  <Button size="sm" variant="secondary" onClick={() => extend(b, 168)}>
+                    <Clock size={14} className="mr-1" /> +1 week
+                  </Button>
+                  <Button size="sm" variant="secondary" onClick={() => extend(b, null)}>Keep forever</Button>
+                  <Button size="sm" variant="ghost" onClick={() => expireNow(b)}>Hide now</Button>
+                </div>
               </div>
               <button onClick={() => remove(b.id)} className="p-2 text-toast hover:text-destructive"><Trash2 size={16} /></button>
             </div>
