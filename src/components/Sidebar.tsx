@@ -4,6 +4,7 @@ import { Menu, X, Home, User, Package, PieChart, HelpCircle, Shield, ChefHat, Lo
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRoles } from "@/hooks/useUserRoles";
 import { Logo } from "./Logo";
+import { BroadcastInbox } from "@/components/BroadcastInbox";
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -85,6 +86,8 @@ export const Sidebar = () => {
                 <span className="font-medium">{item.label}</span>
               </button>
             ))}
+
+            <BroadcastInbox variant="menu" />
 
             {adminItems.length > 0 && (
               <>
