@@ -564,7 +564,7 @@ const StudentDashboard = () => {
             redeemedToday={redeemedToday} 
           />
         ) : pendingSub ? (
-          <PendingPassCard pending={pendingSub} onApplied={loadAll} />
+          <PendingPassCard pending={pendingSub} userEmail={user?.email ?? ""} onApplied={loadAll} />
         ) : (
 
           <PlanSelector plans={plans} userId={user!.id} onCreated={loadAll} />
