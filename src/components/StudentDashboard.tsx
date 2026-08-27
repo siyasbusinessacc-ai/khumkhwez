@@ -550,7 +550,7 @@ const StudentDashboard = () => {
             {profile?.name ? `, ${profile.name}` : ""}
           </p>
           <h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight text-foreground leading-tight">
-            Khumkhwez Now
+            Maniac Lounge App Now
           </h1>
         </div>
         <span className="sr-only" data-testid="user-initials">{initials}</span>

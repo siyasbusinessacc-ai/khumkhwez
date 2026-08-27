@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const REF_KEY = "khumkhwez_pending_ref";
+    const REF_KEY = "maniaclounge_pending_ref";
 
     const tryRedeemPendingReferral = async () => {
       const stored = localStorage.getItem(REF_KEY);

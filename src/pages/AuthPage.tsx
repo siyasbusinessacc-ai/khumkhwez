@@ -6,7 +6,7 @@ import { Logo } from "@/components/Logo";
 import { PasswordStrengthMeter } from "@/components/PasswordStrengthMeter";
 import { isPasswordStrong } from "@/lib/password";
 
-const REF_KEY = "khumkhwez_pending_ref";
+const REF_KEY = "maniaclounge_pending_ref";
 
 const AuthPage = () => {
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
