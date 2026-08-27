@@ -16,6 +16,14 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState<Partial<Profile>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const loadAvatar = async (path: string | null | undefined) => {
+    if (!path) return setAvatarPreview(null);
+    const { data } = await supabase.storage.from("avatars").createSignedUrl(path, 3600);
+    setAvatarPreview(data?.signedUrl ?? null);
+  };
 
   useEffect(() => {
     if (!user) {
@@ -29,10 +37,52 @@ const ProfilePage = () => {
       .maybeSingle()
       .then(({ data, error }) => {
         if (error) console.error("Profile fetch error:", error.message);
-        if (data) setProfile(data);
+        if (data) {
+          setProfile(data);
+          loadAvatar(data.avatar_url);
+        }
         setLoading(false);
       });
   }, [user]);
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Invalid file", description: "Please choose an image.", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Too large", description: "Max image size is 5MB.", variant: "destructive" });
+      return;
+    }
+    setUploading(true);
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const path = `${user.id}/avatar.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(path, file, { upsert: true, contentType: file.type });
+
+    if (uploadError) {
+      toast({ title: "Upload failed", description: uploadError.message, variant: "destructive" });
+      setUploading(false);
+      return;
+    }
+
+    const { error: dbError } = await supabase
+      .from("profiles")
+      .update({ avatar_url: path })
+      .eq("user_id", user.id);
+
+    if (dbError) {
+      toast({ title: "Error", description: dbError.message, variant: "destructive" });
+    } else {
+      setProfile((prev) => ({ ...prev, avatar_url: path }));
+      await loadAvatar(path);
+      toast({ title: "Photo updated", description: "Your profile picture was saved." });
+    }
+    setUploading(false);
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +93,6 @@ const ProfilePage = () => {
       .update({
         name: profile.name || null,
         surname: profile.surname || null,
-        student_number: profile.student_number || null,
         primary_phone: profile.primary_phone || null,
         secondary_phone: profile.secondary_phone || null,
         email: profile.email || null,
@@ -62,6 +111,7 @@ const ProfilePage = () => {
 
   const update = (field: keyof Profile, value: string) =>
     setProfile((prev) => ({ ...prev, [field]: value }));
+
 
   const inputClass = "w-full bg-secondary text-foreground placeholder:text-muted-foreground px-4 py-3 rounded-xl ring-1 ring-border focus:ring-primary focus:outline-none transition-all text-sm";
   const labelClass = "text-toast text-xs font-medium uppercase tracking-wider";
