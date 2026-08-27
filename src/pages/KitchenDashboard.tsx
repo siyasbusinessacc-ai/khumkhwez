@@ -7,6 +7,8 @@ import { useUserRoles } from "@/hooks/useUserRoles";
 import { useToast } from "@/hooks/use-toast";
 import { Logo } from "@/components/Logo";
 import { WalkInOfferCard } from "@/components/kitchen/WalkInOfferCard";
+import { UserDetailDialog } from "@/components/admin/UserDetailDialog";
+
 
 type VerifyResult = {
   ok: boolean;
