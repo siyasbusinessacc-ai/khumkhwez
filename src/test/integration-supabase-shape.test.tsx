@@ -133,7 +133,8 @@ describe("Integration: real Supabase query shape — ProfilePage fetch (.maybeSi
           name: "Thabo",
           surname: "Mokoena",
           student_number: "202301234",
-          primary_phone: null,
+          primary_phone: "+27 81 234 5678",
+
           secondary_phone: null,
           email: "t@uni.ac.za",
           avatar_url: null,
