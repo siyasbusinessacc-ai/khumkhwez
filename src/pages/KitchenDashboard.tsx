@@ -67,6 +67,21 @@ const KitchenDashboard = () => {
       .then(({ data }) => setSlotRemaining(typeof data === "number" ? data : null));
   }, [slotId, lookup]);
 
+  const runSearch = async () => {
+    const q = search.trim();
+    if (!q) return;
+    setSearching(true);
+    const { data } = await supabase
+      .from("profiles")
+      .select("user_id,name,surname,email")
+      .or(`name.ilike.%${q}%,surname.ilike.%${q}%,email.ilike.%${q}%`)
+      .limit(15);
+    setResults((data as any[]) ?? []);
+    setSearching(false);
+  };
+
+
+
 
   const verifyPassCode = async (passCode: string) => {
     setBusy(true);
