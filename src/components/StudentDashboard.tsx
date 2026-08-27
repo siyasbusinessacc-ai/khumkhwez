@@ -227,14 +227,11 @@ const PendingPassCard = ({ pending, onApplied }: { pending: PendingSub; onApplie
         </div>
       </div>
 
-      {/* Reference mandate */}
+      {/* Proof mandate */}
       <div className="mt-4 rounded-2xl p-4 bg-destructive/15 ring-1 ring-destructive/40">
         <p className="text-foreground font-bold text-sm leading-relaxed">
-          IMPORTANT: You MUST use your Email Address as the payment reference so we can activate your account.
+          IMPORTANT: After paying, send your proof of payment on WhatsApp so we can verify and activate your pass.
         </p>
-        {user?.email && (
-          <p className="text-toast text-xs mt-2 font-mono break-all">Your reference: {user.email}</p>
-        )}
       </div>
 
       {/* WhatsApp proof */}
