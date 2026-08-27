@@ -78,7 +78,7 @@ const Landing = () => {
   return (
     <div className="min-h-dvh bg-background text-foreground">
       {/* Announcement bar */}
-      <div className="bg-destructive/90 border-b border-primary/40 overflow-hidden">
+      <div className="sticky top-0 z-50 bg-destructive/90 border-b border-primary/40 overflow-hidden backdrop-blur-sm">
         <p className="animate-pulse text-center text-[11px] sm:text-sm font-semibold tracking-wide text-destructive-foreground px-4 py-2.5">
           <span className="text-brass">⚡ FIRST INTAKE CAPPED AT 50 SPOTS PER PLAN</span> — Kitchen Capacity Limited. Once filled, doors close until next month!
         </p>
