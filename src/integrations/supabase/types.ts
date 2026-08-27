@@ -833,6 +833,7 @@ export type Database = {
         }
         Returns: Json
       }
+      admin_user_detail: { Args: { _target_user: string }; Returns: Json }
       apply_walkin_offer: {
         Args: {
           _code: string
