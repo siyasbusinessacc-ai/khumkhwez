@@ -444,7 +444,7 @@ const PlanSelector = ({
           })}
       </div>
       <p className="text-toast text-xs text-center px-4">
-        Online card payments coming soon. Reserve a plan now and pay in person, or have an admin activate it.
+        Pay by manual EFT (FNB) after reserving — send proof on WhatsApp and we activate your pass.
       </p>
     </div>
   );
