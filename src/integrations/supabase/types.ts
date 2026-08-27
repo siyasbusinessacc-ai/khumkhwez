@@ -45,7 +45,9 @@ export type Database = {
           body: string
           created_at: string
           created_by: string | null
+          expires_at: string | null
           id: string
+          is_pinned: boolean
           target: string
           target_tier: Database["public"]["Enums"]["user_tier"] | null
           title: string
@@ -54,7 +56,9 @@ export type Database = {
           body: string
           created_at?: string
           created_by?: string | null
+          expires_at?: string | null
           id?: string
+          is_pinned?: boolean
           target?: string
           target_tier?: Database["public"]["Enums"]["user_tier"] | null
           title: string
@@ -63,7 +67,9 @@ export type Database = {
           body?: string
           created_at?: string
           created_by?: string | null
+          expires_at?: string | null
           id?: string
+          is_pinned?: boolean
           target?: string
           target_tier?: Database["public"]["Enums"]["user_tier"] | null
           title?: string
@@ -877,7 +883,9 @@ export type Database = {
         Returns: {
           body: string
           created_at: string
+          expires_at: string
           id: string
+          is_pinned: boolean
           is_read: boolean
           title: string
         }[]
