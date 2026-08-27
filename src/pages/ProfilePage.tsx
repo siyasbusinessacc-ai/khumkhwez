@@ -135,6 +135,20 @@ const ProfilePage = () => {
       </header>
 
       <form onSubmit={handleSave} className="px-5 flex flex-col gap-5 mt-2 max-w-2xl mx-auto">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-28 h-28 rounded-full overflow-hidden ring-2 ring-primary/40 bg-secondary flex items-center justify-center">
+            {avatarPreview ? (
+              <img src={avatarPreview} alt="Your profile picture" className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-toast text-xs text-center px-2">No photo</span>
+            )}
+          </div>
+          <label className="text-sm text-brass hover:underline cursor-pointer">
+            {uploading ? "Uploading..." : avatarPreview ? "Change photo" : "Upload profile picture"}
+            <input type="file" accept="image/*" className="sr-only" onChange={handleAvatarChange} disabled={uploading} />
+          </label>
+        </div>
+
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-1.5">
             <label className={labelClass}>Name</label>
@@ -146,10 +160,6 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <label className={labelClass}>Student Number</label>
-          <input className={inputClass} placeholder="e.g. 202301234" value={profile.student_number || ""} onChange={(e) => update("student_number", e.target.value)} />
-        </div>
 
         <div className="flex flex-col gap-1.5">
           <label className={labelClass}>Email</label>
