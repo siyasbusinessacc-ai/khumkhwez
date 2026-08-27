@@ -154,7 +154,6 @@ const WHATSAPP_NUMBER = "27845734958";
 
 const PendingPassCard = ({ pending, onApplied }: { pending: PendingSub; onApplied: () => void }) => {
   const { toast } = useToast();
-  const { user } = useAuth();
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [proofSent, setProofSent] = useState(false);
@@ -169,7 +168,7 @@ const PendingPassCard = ({ pending, onApplied }: { pending: PendingSub; onApplie
   };
 
   const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hi! I've completed the EFT payment for my Maniac Lounge access. My registered email is ${user?.email ?? ""}. Attached is my proof of payment.`,
+    `Hi! I've completed the EFT payment for my Maniac Lounge ${pending.planName} plan (R${(pending.amount_cents / 100).toFixed(2)}). Attached is my proof of payment.`,
   )}`;
 
   const applyOffer = async () => {
@@ -227,14 +226,11 @@ const PendingPassCard = ({ pending, onApplied }: { pending: PendingSub; onApplie
         </div>
       </div>
 
-      {/* Reference mandate */}
+      {/* Proof mandate */}
       <div className="mt-4 rounded-2xl p-4 bg-destructive/15 ring-1 ring-destructive/40">
         <p className="text-foreground font-bold text-sm leading-relaxed">
-          IMPORTANT: You MUST use your Email Address as the payment reference so we can activate your account.
+          IMPORTANT: After paying, send your proof of payment on WhatsApp so we can verify and activate your pass.
         </p>
-        {user?.email && (
-          <p className="text-toast text-xs mt-2 font-mono break-all">Your reference: {user.email}</p>
-        )}
       </div>
 
       {/* WhatsApp proof */}
