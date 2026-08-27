@@ -152,7 +152,7 @@ const BANK_NAME = "FNB";
 const ACCOUNT_NUMBER = "63183622951";
 const WHATSAPP_NUMBER = "27845734958";
 
-const PendingPassCard = ({ pending, onApplied }: { pending: PendingSub; onApplied: () => void }) => {
+const PendingPassCard = ({ pending, userEmail, onApplied }: { pending: PendingSub; userEmail: string; onApplied: () => void }) => {
   const { toast } = useToast();
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
@@ -168,7 +168,7 @@ const PendingPassCard = ({ pending, onApplied }: { pending: PendingSub; onApplie
   };
 
   const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hi! I've completed the EFT payment for my Maniac Lounge ${pending.planName} plan (R${(pending.amount_cents / 100).toFixed(2)}). Attached is my proof of payment.`,
+    `Hi! I've completed the EFT payment for my Maniac Lounge ${pending.planName} plan (R${(pending.amount_cents / 100).toFixed(2)}). My email is ${userEmail} and I used it as the payment reference. Attached is my proof of payment.`,
   )}`;
 
   const applyOffer = async () => {
@@ -564,7 +564,7 @@ const StudentDashboard = () => {
             redeemedToday={redeemedToday} 
           />
         ) : pendingSub ? (
-          <PendingPassCard pending={pendingSub} onApplied={loadAll} />
+          <PendingPassCard pending={pendingSub} userEmail={user?.email ?? ""} onApplied={loadAll} />
         ) : (
 
           <PlanSelector plans={plans} userId={user!.id} onCreated={loadAll} />
