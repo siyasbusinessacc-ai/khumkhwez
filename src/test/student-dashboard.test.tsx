@@ -61,7 +61,7 @@ describe("StudentDashboard", () => {
 
   it("renders the brand heading", () => {
     renderDash();
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/Khumkhwez/);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/Maniac Lounge/);
   });
 
   it("shows plan selector when user has no subscription", async () => {
