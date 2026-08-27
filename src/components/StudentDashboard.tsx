@@ -154,7 +154,7 @@ const WHATSAPP_NUMBER = "27845734958";
 
 const PendingPassCard = ({ pending, onApplied }: { pending: PendingSub; onApplied: () => void }) => {
   const { toast } = useToast();
-  const { user } = useAuth();
+  const [code, setCode] = useState("");
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [proofSent, setProofSent] = useState(false);
