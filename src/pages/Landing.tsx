@@ -78,7 +78,7 @@ const Landing = () => {
   return (
     <div className="min-h-dvh bg-background text-foreground">
       {/* Announcement bar */}
-      <div className="bg-destructive/90 border-b border-primary/40 overflow-hidden">
+      <div className="sticky top-0 z-50 bg-destructive/90 border-b border-primary/40 overflow-hidden backdrop-blur-sm">
         <p className="animate-pulse text-center text-[11px] sm:text-sm font-semibold tracking-wide text-destructive-foreground px-4 py-2.5">
           <span className="text-brass">⚡ FIRST INTAKE CAPPED AT 50 SPOTS PER PLAN</span> — Kitchen Capacity Limited. Once filled, doors close until next month!
         </p>
@@ -126,8 +126,7 @@ const Landing = () => {
           <div className="mt-4 inline-flex flex-wrap justify-center items-center gap-2 bg-card ring-1 ring-primary/30 rounded-2xl px-5 py-3">
             <span className="animate-pulse text-lg leading-none">🔥</span>
             <p className="text-sm text-foreground">
-              Only <span className="font-bold text-brass">12 Weekday Spots</span> &{" "}
-              <span className="font-bold text-brass">7 Full Lounge Passes</span> remaining for this
+              Only <span className="font-bold text-brass">50 spots per package</span> left for this
               intake.
             </p>
           </div>
