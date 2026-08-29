@@ -16,6 +16,7 @@ type PendingPayment = {
   amount_cents: number;
   offer_discount_cents: number;
   wallet_discount_cents: number;
+  holiday_discount_cents: number;
   offer_codes: string[] | null;
   created_at: string;
 };
