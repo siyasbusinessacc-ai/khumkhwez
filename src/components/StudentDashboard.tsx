@@ -19,6 +19,8 @@ import {
 import type { Tables } from "@/integrations/supabase/types";
 
 type Profile = Tables<"profiles">;
+import { HolidayBanner } from "@/components/HolidayBanner";
+
 type MealPlan = Tables<"meal_plans">;
 
 type HolidayQuote = {
