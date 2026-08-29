@@ -121,6 +121,11 @@ export const PendingPaymentsTab = () => {
                         Referral wallet −{rand(r.wallet_discount_cents)}
                       </span>
                     )}
+                    {r.holiday_discount_cents > 0 && (
+                      <span className="px-2.5 py-1 rounded-full bg-primary/10 ring-1 ring-primary/30 text-brass">
+                        Holiday −{rand(r.holiday_discount_cents)}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
