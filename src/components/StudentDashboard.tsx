@@ -19,7 +19,18 @@ import {
 import type { Tables } from "@/integrations/supabase/types";
 
 type Profile = Tables<"profiles">;
+import { HolidayBanner } from "@/components/HolidayBanner";
+
 type MealPlan = Tables<"meal_plans">;
+
+type HolidayQuote = {
+  plan_id: string;
+  price_cents: number;
+  discount_cents: number;
+  final_cents: number;
+  service_days: number;
+  holiday_days: number;
+};
 
 type ActiveSub = {
   id: string;
@@ -290,6 +301,19 @@ const PlanSelector = ({
   const { toast } = useToast();
   const [busy, setBusy] = useState<string | null>(null);
   const { status, availabilityFor, reload, nowLocal } = usePaymentAccess();
+  const [quotes, setQuotes] = useState<HolidayQuote[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    supabase.rpc("plan_holiday_quotes").then(({ data }) => {
+      if (!cancelled) setQuotes((data as HolidayQuote[]) ?? []);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const quoteFor = (planId: string) => quotes.find((q) => q.plan_id === planId) ?? null;
 
   const windowOpen = status?.is_open !== false;
   const opensIn = msUntil(status?.opens_at ?? null, nowLocal);
@@ -365,6 +389,8 @@ const PlanSelector = ({
             const avail = availabilityFor(plan.id);
             const soldOut = avail?.sold_out ?? false;
             const locked = !windowOpen || soldOut;
+            const quote = quoteFor(plan.id);
+            const holidayOff = (quote?.discount_cents ?? 0) > 0;
             return (
               <div
                 key={plan.id}
@@ -392,8 +418,16 @@ const PlanSelector = ({
                     )}
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="font-serif text-2xl text-brass tabular-nums">{formatRand(plan.price_cents)}</p>
-                    <p className="text-toast text-xs">/ {plan.duration_days} days</p>
+                    <p className="font-serif text-2xl text-brass tabular-nums">
+                      {formatRand(holidayOff ? quote!.final_cents : plan.price_cents)}
+                    </p>
+                    {holidayOff ? (
+                      <p className="text-toast text-xs tabular-nums">
+                        <span className="line-through">{formatRand(plan.price_cents)}</span> holiday price
+                      </p>
+                    ) : (
+                      <p className="text-toast text-xs">/ {plan.duration_days} days</p>
+                    )}
                   </div>
                 </div>
 
@@ -564,8 +598,10 @@ const StudentDashboard = () => {
         ) : pendingSub ? (
           <PendingPassCard pending={pendingSub} userEmail={user?.email ?? ""} onApplied={loadAll} />
         ) : (
-
-          <PlanSelector plans={plans} userId={user!.id} onCreated={loadAll} />
+          <>
+            <HolidayBanner />
+            <PlanSelector plans={plans} userId={user!.id} onCreated={loadAll} />
+          </>
         )}
         {activeSub && <SlotBookingCard />}
         <WeeklyMenuView />
