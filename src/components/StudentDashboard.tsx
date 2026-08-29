@@ -416,8 +416,16 @@ const PlanSelector = ({
                     )}
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="font-serif text-2xl text-brass tabular-nums">{formatRand(plan.price_cents)}</p>
-                    <p className="text-toast text-xs">/ {plan.duration_days} days</p>
+                    <p className="font-serif text-2xl text-brass tabular-nums">
+                      {formatRand(holidayOff ? quote!.final_cents : plan.price_cents)}
+                    </p>
+                    {holidayOff ? (
+                      <p className="text-toast text-xs tabular-nums">
+                        <span className="line-through">{formatRand(plan.price_cents)}</span> holiday price
+                      </p>
+                    ) : (
+                      <p className="text-toast text-xs">/ {plan.duration_days} days</p>
+                    )}
                   </div>
                 </div>
 
