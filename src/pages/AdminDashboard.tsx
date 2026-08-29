@@ -453,6 +453,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="offers" className="rounded-lg">Offers</TabsTrigger>
             <TabsTrigger value="slots" className="rounded-lg">Slots</TabsTrigger>
             <TabsTrigger value="access" className="rounded-lg">Payments & Caps</TabsTrigger>
+            <TabsTrigger value="holidays" className="rounded-lg">Holidays</TabsTrigger>
             <TabsTrigger value="broadcasts" className="rounded-lg">Messages</TabsTrigger>
             <TabsTrigger value="analytics" className="rounded-lg">Analytics</TabsTrigger>
             <TabsTrigger value="history" className="rounded-lg">History</TabsTrigger>
