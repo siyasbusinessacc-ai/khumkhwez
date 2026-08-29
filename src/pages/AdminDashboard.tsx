@@ -19,6 +19,7 @@ import { AccessTab } from "@/components/admin/AccessTab";
 import { AnalyticsTab } from "@/components/admin/AnalyticsTab";
 import { MenusTab } from "@/components/admin/MenusTab";
 import { PendingPaymentsTab } from "@/components/admin/PendingPaymentsTab";
+import { HolidaysTab } from "@/components/admin/HolidaysTab";
 import { UserDetailDialog } from "@/components/admin/UserDetailDialog";
 
 
