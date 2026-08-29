@@ -290,6 +290,19 @@ const PlanSelector = ({
   const { toast } = useToast();
   const [busy, setBusy] = useState<string | null>(null);
   const { status, availabilityFor, reload, nowLocal } = usePaymentAccess();
+  const [quotes, setQuotes] = useState<HolidayQuote[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    supabase.rpc("plan_holiday_quotes").then(({ data }) => {
+      if (!cancelled) setQuotes((data as HolidayQuote[]) ?? []);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const quoteFor = (planId: string) => quotes.find((q) => q.plan_id === planId) ?? null;
 
   const windowOpen = status?.is_open !== false;
   const opensIn = msUntil(status?.opens_at ?? null, nowLocal);
