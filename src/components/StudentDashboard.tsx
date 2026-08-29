@@ -21,6 +21,15 @@ import type { Tables } from "@/integrations/supabase/types";
 type Profile = Tables<"profiles">;
 type MealPlan = Tables<"meal_plans">;
 
+type HolidayQuote = {
+  plan_id: string;
+  price_cents: number;
+  discount_cents: number;
+  final_cents: number;
+  service_days: number;
+  holiday_days: number;
+};
+
 type ActiveSub = {
   id: string;
   status: string;
