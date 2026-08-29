@@ -78,7 +78,8 @@ export const PendingPaymentsTab = () => {
       ) : (
         <div className="grid gap-3">
           {filtered.map((r) => {
-            const totalDiscount = (r.offer_discount_cents ?? 0) + (r.wallet_discount_cents ?? 0);
+            const totalDiscount =
+              (r.offer_discount_cents ?? 0) + (r.wallet_discount_cents ?? 0) + (r.holiday_discount_cents ?? 0);
             return (
               <div key={r.subscription_id} className="bg-card rounded-2xl p-4 ring-1 ring-border">
                 <div className="flex flex-wrap justify-between gap-3">
