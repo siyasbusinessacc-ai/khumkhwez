@@ -94,6 +94,51 @@ export type Database = {
         }
         Relationships: []
       }
+      holiday_periods: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          discount_percent: number
+          end_date: string
+          id: string
+          is_active: boolean
+          kind: string
+          name: string
+          notes: string | null
+          source: string
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          discount_percent?: number
+          end_date: string
+          id?: string
+          is_active?: boolean
+          kind?: string
+          name: string
+          notes?: string | null
+          source?: string
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          discount_percent?: number
+          end_date?: string
+          id?: string
+          is_active?: boolean
+          kind?: string
+          name?: string
+          notes?: string | null
+          source?: string
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       meal_plans: {
         Row: {
           allowed_weekdays: number[]
@@ -546,6 +591,7 @@ export type Database = {
           amount_cents: number
           created_at: string
           end_date: string | null
+          holiday_discount_cents: number
           id: string
           plan_id: string
           start_date: string | null
@@ -560,6 +606,7 @@ export type Database = {
           amount_cents: number
           created_at?: string
           end_date?: string | null
+          holiday_discount_cents?: number
           id?: string
           plan_id: string
           start_date?: string | null
@@ -574,6 +621,7 @@ export type Database = {
           amount_cents?: number
           created_at?: string
           end_date?: string | null
+          holiday_discount_cents?: number
           id?: string
           plan_id?: string
           start_date?: string | null
@@ -768,6 +816,7 @@ export type Database = {
           amount_cents: number
           created_at: string
           email: string
+          holiday_discount_cents: number
           name: string
           offer_codes: string[]
           offer_discount_cents: number
@@ -878,6 +927,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      holiday_quote: {
+        Args: { _plan_id: string; _start?: string }
+        Returns: Json
+      }
       list_my_broadcasts: {
         Args: never
         Returns: {
@@ -937,6 +990,17 @@ export type Database = {
           taken: number
         }[]
       }
+      plan_holiday_quotes: {
+        Args: never
+        Returns: {
+          discount_cents: number
+          final_cents: number
+          holiday_days: number
+          plan_id: string
+          price_cents: number
+          service_days: number
+        }[]
+      }
       redeem_offer_code: {
         Args: { _code: string; _subscription_id: string }
         Returns: Json
@@ -966,6 +1030,18 @@ export type Database = {
       tier_for_paid_count: {
         Args: { _count: number }
         Returns: Database["public"]["Enums"]["user_tier"]
+      }
+      upcoming_holidays: {
+        Args: { _days_ahead?: number }
+        Returns: {
+          discount_percent: number
+          end_date: string
+          id: string
+          is_current: boolean
+          kind: string
+          name: string
+          start_date: string
+        }[]
       }
       verify_pass: { Args: { _pass_code: string }; Returns: Json }
     }
