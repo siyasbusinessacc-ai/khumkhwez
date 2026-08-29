@@ -387,6 +387,8 @@ const PlanSelector = ({
             const avail = availabilityFor(plan.id);
             const soldOut = avail?.sold_out ?? false;
             const locked = !windowOpen || soldOut;
+            const quote = quoteFor(plan.id);
+            const holidayOff = (quote?.discount_cents ?? 0) > 0;
             return (
               <div
                 key={plan.id}
